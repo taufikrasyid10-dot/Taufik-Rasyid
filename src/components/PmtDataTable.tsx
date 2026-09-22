@@ -316,8 +316,8 @@ export default function PmtDataTable({
               className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
             >
               <option value="Semua">Semua Status Gizi</option>
-              <option value="Gizi Baik">Gizi Baik</option>
-              <option value="Gizi Kurang">Gizi Kurang</option>
+              <option value="Normal">Normal</option>
+              <option value="Stunting">Stunting</option>
               <option value="Gizi Buruk">Gizi Buruk</option>
               <option value="Berisiko Lebih">Berisiko Lebih</option>
               <option value="Gizi Lebih">Gizi Lebih</option>
