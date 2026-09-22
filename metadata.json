@@ -1,0 +1,6 @@
+{
+  "name": "Sistem Penguplotan Data PMT Stunting",
+  "description": "Aplikasi web penguplotan, pemantauan, dan evaluasi data Pemberian Makanan Tambahan (PMT) Balita Stunting berbasis standar Kemenkes & WHO.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
