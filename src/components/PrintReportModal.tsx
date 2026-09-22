@@ -247,17 +247,17 @@ export default function PrintReportModal({ isOpen, onClose, data }: PrintReportM
           <div className="pt-8 grid grid-cols-2 text-center text-xs text-slate-800">
             <div>
               <p className="text-slate-500">Mengetahui,</p>
-              <p className="font-semibold text-slate-900 mt-1">Penanggung Jawab Program Gizi Puskesmas</p>
+              <p className="font-semibold text-slate-900 mt-1">Bidan Desa / Koordinator Kader Posyandu</p>
               <div className="h-20" />
               <p className="font-bold underline text-slate-900">( ..................................................... )</p>
               <p className="text-[11px] text-slate-500">NIP. ............................................</p>
             </div>
             <div>
               <p className="text-slate-500">Dibuat pada tanggal {currentDate}</p>
-              <p className="font-semibold text-slate-900 mt-1">Bidan Desa / Koordinator Kader Posyandu</p>
+              <p className="font-semibold text-slate-900 mt-1">KPM Kajulangko</p>
               <div className="h-20" />
               <p className="font-bold underline text-slate-900">( ..................................................... )</p>
-              <p className="text-[11px] text-slate-500">Kader Posyandu</p>
+              <p className="text-[11px] text-slate-500">NIP. ............................................</p>
             </div>
           </div>
 
