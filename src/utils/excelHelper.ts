@@ -22,7 +22,7 @@ function normalizeKey(key: string): string {
 }
 
 /**
- * Template Kolom Baku PMT Stunting
+ * Template Kolom Baku Evaluasi Stunting
  */
 export const TEMPLATE_COLUMNS = [
   'NIK',
@@ -38,8 +38,8 @@ export const TEMPLATE_COLUMNS = [
   'Tinggi Badan (cm)',
   'Lingkar Lengan LiLA (cm)',
   'Lingkar Kepala (cm)',
-  'Hari PMT ke-',
-  'Menu PMT Lokal',
+  'Bulan ke-',
+  'Menu Makanan Lokal',
   'Kepatuhan Konsumsi',
   'Catatan Kesehatan',
 ];
@@ -63,8 +63,8 @@ export function downloadExcelTemplate() {
       'Tinggi Badan (cm)': 80.5,
       'Lingkar Lengan LiLA (cm)': 12.5,
       'Lingkar Kepala (cm)': 46.2,
-      'Hari PMT ke-': 30,
-      'Menu PMT Lokal': 'MENU NASI GORENG CERIA (Ayam Suwir, Telur, Wortel, Selada)',
+      'Bulan ke-': 1,
+      'Menu Makanan Lokal': 'MENU NASI GORENG CERIA (Ayam Suwir, Telur, Wortel, Selada)',
       'Kepatuhan Konsumsi': 'Habis',
       'Catatan Kesehatan': 'Sasaran stunting (TB/U -2.43 SD). Nafsu makan membaik saat intervensi.',
     },
@@ -82,8 +82,8 @@ export function downloadExcelTemplate() {
       'Tinggi Badan (cm)': 75.0,
       'Lingkar Lengan LiLA (cm)': 12.1,
       'Lingkar Kepala (cm)': 45.0,
-      'Hari PMT ke-': 30,
-      'Menu PMT Lokal': 'MENU SOTO AYAM (Ayam Kampung, Bihun, Tauge, Kaldu Kaya Protein)',
+      'Bulan ke-': 1,
+      'Menu Makanan Lokal': 'MENU SOTO AYAM (Ayam Kampung, Bihun, Tauge, Kaldu Kaya Protein)',
       'Kepatuhan Konsumsi': 'Habis',
       'Catatan Kesehatan': 'Stunting Sangat Pendek (TB/U -3.48 SD). Memerlukan pendampingan makan intensif.',
     },
@@ -101,8 +101,8 @@ export function downloadExcelTemplate() {
       'Tinggi Badan (cm)': 79.5,
       'Lingkar Lengan LiLA (cm)': 12.4,
       'Lingkar Kepala (cm)': 45.8,
-      'Hari PMT ke-': 30,
-      'Menu PMT Lokal': 'MENU SUP BOLA-BOLA TAHU AYAM + WORTEL',
+      'Bulan ke-': 1,
+      'Menu Makanan Lokal': 'MENU SUP BOLA-BOLA TAHU AYAM + WORTEL',
       'Kepatuhan Konsumsi': 'Habis',
       'Catatan Kesehatan': 'Sasaran stunting (TB/U -2.83 SD). Didampingi kader Posyandu saat makan.',
     }
@@ -125,14 +125,14 @@ export function downloadExcelTemplate() {
     { wch: 16 }, // TB
     { wch: 18 }, // LiLA
     { wch: 16 }, // LK
-    { wch: 14 }, // Hari PMT
-    { wch: 35 }, // Menu PMT
+    { wch: 14 }, // Bulan
+    { wch: 35 }, // Menu
     { wch: 18 }, // Kepatuhan
     { wch: 30 }, // Catatan
   ];
 
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Template_PMT_Stunting');
+  XLSX.utils.book_append_sheet(wb, ws, 'Template_Stunting');
 
   // Add petunjuk sheet
   const guidelines = [
@@ -147,13 +147,13 @@ export function downloadExcelTemplate() {
   const wsGuide = XLSX.utils.json_to_sheet(guidelines);
   XLSX.utils.book_append_sheet(wb, wsGuide, 'Petunjuk_Pengisian');
 
-  XLSX.writeFile(wb, 'Template_Data_PMT_Stanting_Balita.xlsx');
+  XLSX.writeFile(wb, 'Template_Data_Stanting_Balita.xlsx');
 }
 
 /**
- * Ekspor / Cetak Lembar Rekapitulasi Balita PMT ke Excel (.xlsx)
+ * Ekspor / Cetak Lembar Rekapitulasi Balita ke Excel (.xlsx)
  */
-export function exportDataToExcel(data: BalitaPMT[], filename = 'Cetakan_Evaluasi_PMT_Stunting') {
+export function exportDataToExcel(data: BalitaPMT[], filename = 'Cetakan_Evaluasi_Stunting') {
   const exportRows = data.map((item, idx) => ({
     'No': idx + 1,
     'NIK': item.nik,
@@ -173,8 +173,8 @@ export function exportDataToExcel(data: BalitaPMT[], filename = 'Cetakan_Evaluas
     'Z-Score BB/U': item.zScoreBBU,
     'Status Berat Badan (BB/U)': item.statusBBU,
     'Status Gizi (BB/TB)': item.statusBBTB,
-    'Hari PMT ke-': item.hariPMT,
-    'Menu PMT': item.menuPMT,
+    'BULAN': `Bulan ke-${Math.max(1, Math.ceil(item.hariPMT / 30))} (Hari ke-${item.hariPMT})`,
+    'Menu Makanan': item.menuPMT,
     'Kepatuhan Konsumsi': item.kepatuhan,
     'Status Intervensi': item.statusIntervensi,
     'Catatan Kesehatan': item.catatanKesehatan,
@@ -202,8 +202,8 @@ export function exportDataToExcel(data: BalitaPMT[], filename = 'Cetakan_Evaluas
     { wch: 14 }, // Z-Score BB/U
     { wch: 22 }, // Status BB/U
     { wch: 18 }, // Status BB/TB
-    { wch: 14 }, // Hari PMT
-    { wch: 35 }, // Menu PMT
+    { wch: 20 }, // BULAN
+    { wch: 35 }, // Menu Makanan
     { wch: 18 }, // Kepatuhan
     { wch: 20 }, // Status Intervensi
     { wch: 35 }, // Catatan Kesehatan
@@ -226,15 +226,15 @@ export function exportDataToExcel(data: BalitaPMT[], filename = 'Cetakan_Evaluas
   });
 
   const summaryRows = [
-    { 'Parameter': 'Judul Laporan', 'Keterangan': 'LAPORAN EVALUASI PEMBERIAN MAKANAN TAMBAHAN (PMT) BALITA STUNTING' },
+    { 'Parameter': 'Judul Laporan', 'Keterangan': 'LAPORAN EVALUASI DATA BALITA STUNTING' },
     { 'Parameter': 'Puskesmas Pengampu', 'Keterangan': data[0]?.puskesmas || 'Puskesmas Ampana Tete' },
     { 'Parameter': 'Tanggal Cetak Laporan', 'Keterangan': currentDate },
     { 'Parameter': 'Standar Baku Antropometri', 'Keterangan': 'Permenkes RI No. 2 Tahun 2020 (WHO Child Growth Standards)' },
-    { 'Parameter': 'Total Balita Sasaran PMT', 'Keterangan': `${total} Anak` },
+    { 'Parameter': 'Total Balita Sasaran', 'Keterangan': `${total} Anak` },
     { 'Parameter': 'Balita Kategori Sangat Pendek (Severely Stunted)', 'Keterangan': `${sangatPendek} Anak` },
     { 'Parameter': 'Balita Kategori Pendek (Stunted)', 'Keterangan': `${pendek} Anak` },
     { 'Parameter': 'Total Prevalensi Stunting dalam Program', 'Keterangan': `${sangatPendek + pendek} Anak (${total > 0 ? Math.round(((sangatPendek + pendek) / total) * 100) : 0}%)` },
-    { 'Parameter': 'Kepatuhan Konsumsi PMT Baik (Habis / 3/4 Porsi)', 'Keterangan': `${patuh} Anak (${total > 0 ? Math.round((patuh / total) * 100) : 0}%)` },
+    { 'Parameter': 'Kepatuhan Konsumsi Makanan Baik (Habis / 3/4 Porsi)', 'Keterangan': `${patuh} Anak (${total > 0 ? Math.round((patuh / total) * 100) : 0}%)` },
   ];
   const wsSummary = XLSX.utils.json_to_sheet(summaryRows);
   wsSummary['!cols'] = [{ wch: 38 }, { wch: 60 }];
@@ -246,7 +246,7 @@ export function exportDataToExcel(data: BalitaPMT[], filename = 'Cetakan_Evaluas
 /**
  * Ekspor Data ke Format CSV
  */
-export function exportDataToCSV(data: BalitaPMT[], filename = 'Data_PMT_Stunting') {
+export function exportDataToCSV(data: BalitaPMT[], filename = 'Data_Stunting') {
   const exportRows = data.map((item, idx) => ({
     'No': idx + 1,
     'NIK': item.nik,
@@ -263,7 +263,7 @@ export function exportDataToCSV(data: BalitaPMT[], filename = 'Data_PMT_Stunting
     'Tinggi Badan (cm)': item.tinggiBadan,
     'Z-Score TB/U': item.zScoreTBU,
     'Status Stunting': item.statusTBU,
-    'Hari PMT': item.hariPMT,
+    'BULAN': Math.max(1, Math.ceil(item.hariPMT / 30)),
     'Kepatuhan': item.kepatuhan,
     'Status Intervensi': item.statusIntervensi,
   }));
@@ -287,8 +287,8 @@ export async function parseUploadedFile(file: File): Promise<UploadSummary> {
   const arrayBuffer = await file.arrayBuffer();
   const workbook = XLSX.read(arrayBuffer, { type: 'array' });
 
-  // Ambil sheet pertama atau sheet dengan nama yang mengandung PMT
-  const sheetName = workbook.SheetNames.find(n => n.toLowerCase().includes('pmt') || n.toLowerCase().includes('data')) || workbook.SheetNames[0];
+  // Ambil sheet pertama atau sheet dengan nama yang relevan
+  const sheetName = workbook.SheetNames.find(n => n.toLowerCase().includes('stunting') || n.toLowerCase().includes('balita') || n.toLowerCase().includes('data')) || workbook.SheetNames[0];
   const worksheet = workbook.Sheets[sheetName];
 
   if (!worksheet) {
@@ -407,7 +407,7 @@ export async function parseUploadedFile(file: File): Promise<UploadSummary> {
       lingkarKepala: mapped.lingkarKepala || undefined,
       hariPMT,
       totalHariProgram: 90,
-      menuPMT: mapped.menuPMT || 'Menu PMT Pangan Lokal (Kemenkes)',
+      menuPMT: mapped.menuPMT || 'Menu Pangan Lokal Bergizi',
       kepatuhan,
       statusTBU,
       statusBBU,

@@ -200,13 +200,13 @@ export function getStatusBBTB(zScore: number): StatusBBTB {
 export function determineIntervensiStatus(
   statusTBU: StatusTBU,
   kepatuhan: string,
-  hariPMT: number
+  hariKe: number
 ): StatusIntervensi {
   if (statusTBU === 'Sangat Pendek' && kepatuhan === 'Tidak Dikonsumsi') {
     return 'Kritis';
   }
   if (statusTBU === 'Sangat Pendek' || statusTBU === 'Pendek') {
-    if (hariPMT >= 60 && (kepatuhan === 'Habis' || kepatuhan === '3/4 Porsi')) {
+    if (hariKe >= 60 && (kepatuhan === 'Habis' || kepatuhan === '3/4 Porsi')) {
       return 'Membaik';
     }
     return 'Perlu Tindak Lanjut';

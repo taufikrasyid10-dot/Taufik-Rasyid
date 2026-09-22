@@ -144,9 +144,9 @@ export default function PmtDataTable({
     }
 
     if (format === 'xlsx') {
-      exportDataToExcel(exportTargets, `Rekap_PMT_Stunting_${selectedPosyandu !== 'Semua' ? selectedPosyandu : 'Semua'}`);
+      exportDataToExcel(exportTargets, `Rekap_Stunting_${selectedPosyandu !== 'Semua' ? selectedPosyandu : 'Semua'}`);
     } else {
-      exportDataToCSV(exportTargets, `Rekap_PMT_Stunting_${selectedPosyandu !== 'Semua' ? selectedPosyandu : 'Semua'}`);
+      exportDataToCSV(exportTargets, `Rekap_Stunting_${selectedPosyandu !== 'Semua' ? selectedPosyandu : 'Semua'}`);
     }
   };
 
@@ -396,7 +396,7 @@ export default function PmtDataTable({
               <th className="px-3 py-3">TB / BB</th>
               <th className="px-3 py-3">Status Stunting (TB/U)</th>
               <th className="px-3 py-3">Status Gizi Balita</th>
-              <th className="px-3 py-3">Siklus PMT</th>
+              <th className="px-3 py-3">BULAN</th>
               <th className="px-3 py-3">Kepatuhan</th>
               <th className="px-3 py-3 text-right">Aksi</th>
             </tr>
@@ -408,7 +408,7 @@ export default function PmtDataTable({
                   <div className="flex flex-col items-center justify-center gap-2">
                     <AlertCircle className="h-8 w-8 text-slate-300" />
                     <p className="font-semibold text-slate-600">Tidak ada data balita yang cocok</p>
-                    <p className="text-xs text-slate-400">Silakan ubah filter pencarian atau unggah file data PMT baru.</p>
+                    <p className="text-xs text-slate-400">Silakan ubah filter pencarian atau unggah file data baru.</p>
                   </div>
                 </td>
               </tr>
@@ -510,10 +510,10 @@ export default function PmtDataTable({
                       </div>
                     </td>
 
-                    {/* Siklus PMT */}
+                    {/* Bulan */}
                     <td className="px-3 py-3">
-                      <div className="font-semibold text-indigo-700">Hari ke-{balita.hariPMT}</div>
-                      <div className="text-[11px] text-slate-400">Target 90 Hari</div>
+                      <div className="font-semibold text-indigo-700">Bulan ke-{Math.max(1, Math.ceil(balita.hariPMT / 30))}</div>
+                      <div className="text-[11px] text-slate-400">Hari ke-{balita.hariPMT}</div>
                     </td>
 
                     {/* Kepatuhan */}

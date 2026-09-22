@@ -163,7 +163,7 @@ export default function GrowthCurvePlot({ balita, onClose, onSelectAnother, allB
               <p className="text-base font-bold text-slate-800 mt-0.5">
                 {tbGain >= 0 ? `+${tbGain}` : tbGain} cm
               </p>
-              <span className="text-[10px] text-slate-400">Selama siklus PMT</span>
+              <span className="text-[10px] text-slate-400">Selama pemantauan</span>
             </div>
 
             <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-3">
@@ -183,7 +183,7 @@ export default function GrowthCurvePlot({ balita, onClose, onSelectAnother, allB
                 Kemajuan Program
               </span>
               <p className="text-base font-bold text-indigo-700 mt-0.5">
-                Hari ke-{balita.hariPMT} / {balita.totalHariProgram}
+                Bulan ke-{Math.max(1, Math.ceil(balita.hariPMT / 30))} (Hari {balita.hariPMT})
               </p>
               <div className="w-full bg-slate-200 rounded-full h-1.5 mt-1">
                 <div 
@@ -196,7 +196,7 @@ export default function GrowthCurvePlot({ balita, onClose, onSelectAnother, allB
             <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-3">
               <span className="text-[11px] text-slate-500 flex items-center gap-1">
                 <Award className="h-3.5 w-3.5 text-amber-600" />
-                Kepatuhan PMT
+                Tingkat Kepatuhan
               </span>
               <p className="text-base font-bold text-amber-800 mt-0.5">
                 {balita.kepatuhan}
@@ -412,13 +412,13 @@ export default function GrowthCurvePlot({ balita, onClose, onSelectAnother, allB
           {/* Full History Timeline Table */}
           <div>
             <h4 className="text-xs font-bold uppercase text-slate-500 tracking-wider mb-2">
-              Log Riwayat Pengukuran Siklus PMT
+              Log Riwayat Pengukuran Bulanan
             </h4>
             <div className="overflow-hidden rounded-xl border border-slate-200">
               <table className="w-full text-left text-xs text-slate-700">
                 <thead className="bg-slate-50 text-[11px] font-semibold text-slate-500 uppercase border-b border-slate-200">
                   <tr>
-                    <th className="px-3 py-2.5">Siklus</th>
+                    <th className="px-3 py-2.5">Bulan</th>
                     <th className="px-3 py-2.5">Tanggal</th>
                     <th className="px-3 py-2.5">Tinggi (cm)</th>
                     <th className="px-3 py-2.5">Berat (kg)</th>
@@ -433,7 +433,7 @@ export default function GrowthCurvePlot({ balita, onClose, onSelectAnother, allB
                       onClick={() => setSelectedPointIndex(idx)}
                       className={`cursor-pointer hover:bg-slate-50 ${activePoint === p ? 'bg-emerald-50/60 font-medium' : ''}`}
                     >
-                      <td className="px-3 py-2 font-semibold text-emerald-800">Hari ke-{p.hariPMT}</td>
+                      <td className="px-3 py-2 font-semibold text-emerald-800">Bulan ke-{Math.max(1, Math.ceil(p.hariPMT / 30))} (Hari {p.hariPMT})</td>
                       <td className="px-3 py-2">{p.tanggal}</td>
                       <td className="px-3 py-2 font-mono">{p.tinggiBadan} cm</td>
                       <td className="px-3 py-2 font-mono">{p.beratBadan} kg</td>

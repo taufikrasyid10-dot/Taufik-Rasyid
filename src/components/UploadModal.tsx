@@ -92,7 +92,7 @@ export default function UploadModal({ isOpen, onClose, onConfirmUpload }: Upload
           <div>
             <h2 className="text-lg font-bold text-slate-900 flex items-center gap-2">
               <Upload className="h-5 w-5 text-emerald-600" />
-              Penguplotan Data PMT Balita Stunting
+              Penguplotan Data Balita Stunting
             </h2>
             <p className="text-xs text-slate-500 mt-0.5">
               Unggah file rekapan Excel (.xlsx, .xls) atau CSV hasil penimbangan Posyandu
@@ -362,7 +362,7 @@ export default function UploadModal({ isOpen, onClose, onConfirmUpload }: Upload
                   disabled={summary.validRows === 0}
                   className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-emerald-700 active:scale-95 transition disabled:opacity-50"
                 >
-                  <span>Simpan {summary.validRows} Data PMT</span>
+                  <span>Simpan {summary.validRows} Data Balita</span>
                   <ArrowRight className="h-3.5 w-3.5" />
                 </button>
               </div>

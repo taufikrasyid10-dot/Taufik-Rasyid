@@ -23,7 +23,7 @@ export default function PrintReportModal({ isOpen, onClose, data }: PrintReportM
   };
 
   const handleExportExcel = () => {
-    exportDataToExcel(data, 'Cetakan_Evaluasi_PMT_Stunting');
+    exportDataToExcel(data, 'Cetakan_Evaluasi_Stunting');
   };
 
   const currentDate = new Date().toLocaleDateString('id-ID', {
@@ -43,7 +43,7 @@ export default function PrintReportModal({ isOpen, onClose, data }: PrintReportM
           <div>
             <div className="flex items-center gap-2">
               <h2 className="text-sm font-bold text-slate-800">
-                Cetakan Laporan Evaluasi PMT Stunting
+                Cetakan Laporan Evaluasi Stunting
               </h2>
               <span className="rounded-full bg-emerald-100 text-emerald-800 px-2 py-0.5 text-[10px] font-bold">
                 Excel &amp; PDF
@@ -160,7 +160,7 @@ export default function PrintReportModal({ isOpen, onClose, data }: PrintReportM
           {/* Official Letterhead (Kop Surat Laporan) */}
           <div className="text-center border-b-2 border-slate-800 pb-4">
             <h1 className="text-base font-bold uppercase tracking-wider text-slate-900">
-              Laporan Rekapitulasi Pemberian Makanan Tambahan (PMT)
+              Laporan Rekapitulasi Data Evaluasi Stunting Balita
             </h1>
             <h2 className="text-sm font-semibold uppercase tracking-wide text-slate-700">
               Program Intervensi Pencegahan & Percepatan Penurunan Stunting Balita
@@ -212,7 +212,7 @@ export default function PrintReportModal({ isOpen, onClose, data }: PrintReportM
                   <th className="p-2 border-r border-slate-300 text-center">Z-Score TB/U</th>
                   <th className="p-2 border-r border-slate-300">Status Stunting</th>
                   <th className="p-2 border-r border-slate-300">Status Gizi Balita</th>
-                  <th className="p-2 text-center">Hari PMT</th>
+                  <th className="p-2 text-center">BULAN</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200">
@@ -236,7 +236,7 @@ export default function PrintReportModal({ isOpen, onClose, data }: PrintReportM
                       <span className="font-semibold text-slate-800">{item.statusBBTB || 'Gizi Baik'}</span>
                       <span className="text-slate-500 block text-[10px]">BB/U: {item.statusBBU || 'Normal'}</span>
                     </td>
-                    <td className="p-2 text-center font-mono">Hari ke-{item.hariPMT}</td>
+                    <td className="p-2 text-center font-mono">Bulan ke-{Math.max(1, Math.ceil(item.hariPMT / 30))}</td>
                   </tr>
                 ))}
               </tbody>
@@ -257,7 +257,7 @@ export default function PrintReportModal({ isOpen, onClose, data }: PrintReportM
               <p className="font-semibold text-slate-900 mt-1">Bidan Desa / Koordinator Kader Posyandu</p>
               <div className="h-20" />
               <p className="font-bold underline text-slate-900">( ..................................................... )</p>
-              <p className="text-[11px] text-slate-500">Kader Pelaksana PMT Lokal</p>
+              <p className="text-[11px] text-slate-500">Kader Posyandu</p>
             </div>
           </div>
 

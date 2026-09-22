@@ -116,9 +116,6 @@ export default function StatisticsOverview({
             <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700">
               Proporsi Status Stunting & Distribusi Wilayah
             </h3>
-            <p className="text-xs text-slate-500">
-              Distribusi status TB/U balita intervensi PMT berdasarkan standar WHO
-            </p>
           </div>
 
           {/* Quick Posyandu Filter */}

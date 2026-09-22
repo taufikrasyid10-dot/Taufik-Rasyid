@@ -70,7 +70,7 @@ export default function App() {
   const handleResetData = () => {
     if (confirm('Kembalikan data ke 3 balita sasaran stunting (ARSYAD, MOHAMMAD ALFA RISKI, NURHAFIZAH)?')) {
       setData(INITIAL_PMT_DATA);
-      showToast('Data berhasil diperbarui: 3 balita stunting sasaran PMT.');
+      showToast('Data berhasil diperbarui: 3 balita sasaran stunting.');
     }
   };
 
@@ -89,7 +89,7 @@ export default function App() {
           setIsManualEntryOpen(true);
         }}
         onOpenPrintReport={() => setIsPrintReportOpen(true)}
-        onExportExcel={() => exportDataToExcel(data, 'Cetakan_Evaluasi_PMT_Stunting')}
+        onExportExcel={() => exportDataToExcel(data, 'Cetakan_Evaluasi_Stunting')}
         onResetData={handleResetData}
       />
 
@@ -191,7 +191,7 @@ export default function App() {
       <footer className="border-t border-slate-200 bg-white py-4 mt-auto print:hidden">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-500">
           <div>
-            Sistem Penguplotan &amp; Evaluasi Antropometri Balita PMT Stunting • Standar Kemenkes RI
+            Sistem Penguplotan &amp; Evaluasi Antropometri Balita Stunting • Standar Kemenkes RI
           </div>
           <div>
             Data tersimpan aman di penyimpanan lokal peramban web

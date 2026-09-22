@@ -28,10 +28,10 @@ export const INITIAL_PMT_DATA: BalitaPMT[] = [
     zScoreBBU: -2.20,
     zScoreBBTB: -2.05,
     statusIntervensi: 'Membaik',
-    catatanKesehatan: 'Balita stunting sasaran PMT. Nafsu makan membaik saat intervensi, konsumsi menu nasi goreng ceria habis mandiri.',
+    catatanKesehatan: 'Balita sasaran stunting. Nafsu makan membaik saat intervensi, konsumsi menu nasi goreng ceria habis mandiri.',
     riwayat: [
       { id: 'h-1', tanggal: '2026-07-01', hariPMT: 1, beratBadan: 8.8, tinggiBadan: 79.5, kepatuhan: '3/4 Porsi', catatan: 'Skrining awal stunting posyandu' },
-      { id: 'h-2', tanggal: '2026-07-15', hariPMT: 15, beratBadan: 9.0, tinggiBadan: 80.0, kepatuhan: 'Habis', catatan: 'Pemberian PMT lokal 15 hari' },
+      { id: 'h-2', tanggal: '2026-07-15', hariPMT: 15, beratBadan: 9.0, tinggiBadan: 80.0, kepatuhan: 'Habis', catatan: 'Pemberian makanan bergizi 15 hari' },
       { id: 'h-3', tanggal: '2026-08-01', hariPMT: 30, beratBadan: 9.3, tinggiBadan: 80.5, kepatuhan: 'Habis', catatan: 'Evaluasi bulan ke-1: kenaikan TB +1.0 cm, BB +500 gram' },
     ]
   },
@@ -64,7 +64,7 @@ export const INITIAL_PMT_DATA: BalitaPMT[] = [
     statusIntervensi: 'Perlu Tindak Lanjut',
     catatanKesehatan: 'Stunting kategori Sangat Pendek (Severely Stunted) — TB/U: -3.48 SD dengan gizi kurang. Memerlukan pendampingan makan intensif kader & ibu.',
     riwayat: [
-      { id: 'h-4', tanggal: '2026-07-01', hariPMT: 1, beratBadan: 7.9, tinggiBadan: 74.2, kepatuhan: '1/2 Porsi', catatan: 'Mulai PMT pemulihan' },
+      { id: 'h-4', tanggal: '2026-07-01', hariPMT: 1, beratBadan: 7.9, tinggiBadan: 74.2, kepatuhan: '1/2 Porsi', catatan: 'Mulai program pemulihan' },
       { id: 'h-5', tanggal: '2026-07-15', hariPMT: 15, beratBadan: 8.1, tinggiBadan: 74.6, kepatuhan: '3/4 Porsi', catatan: 'Mulai terbiasa dengan menu protein hewani' },
       { id: 'h-6', tanggal: '2026-08-01', hariPMT: 30, beratBadan: 8.4, tinggiBadan: 75.0, kepatuhan: 'Habis', catatan: 'Disuapi ibu, porsi habis. TB bertambah +0.8 cm' },
     ]
@@ -98,7 +98,7 @@ export const INITIAL_PMT_DATA: BalitaPMT[] = [
     statusIntervensi: 'Membaik',
     catatanKesehatan: 'Balita stunting dengan status gizi kurang. Didampingi kader Posyandu Kajulangko saat makan bersama.',
     riwayat: [
-      { id: 'h-7', tanggal: '2026-07-01', hariPMT: 1, beratBadan: 8.4, tinggiBadan: 78.6, kepatuhan: '3/4 Porsi', catatan: 'Awal program PMT 90 hari' },
+      { id: 'h-7', tanggal: '2026-07-01', hariPMT: 1, beratBadan: 8.4, tinggiBadan: 78.6, kepatuhan: '3/4 Porsi', catatan: 'Awal program pemulihan 90 hari' },
       { id: 'h-8', tanggal: '2026-07-16', hariPMT: 16, beratBadan: 8.6, tinggiBadan: 79.0, kepatuhan: 'Habis', catatan: 'Kunjungan kader gizi' },
       { id: 'h-9', tanggal: '2026-08-01', hariPMT: 30, beratBadan: 8.9, tinggiBadan: 79.5, kepatuhan: 'Habis', catatan: 'Evaluasi bulan 1: TB bertambah +0.9 cm' },
     ]
