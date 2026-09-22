@@ -50,61 +50,61 @@ export const TEMPLATE_COLUMNS = [
 export function downloadExcelTemplate() {
   const exampleRows = [
     {
-      'NIK': '3201025501230001',
-      'Nama Balita': 'Muhammad Rayhan',
-      'Nama Ibu': 'Siti Nurhaliza',
+      'NIK': '7209042201230001',
+      'Nama Balita': 'ARSYAD',
+      'Nama Ibu': 'Nurlina',
       'Jenis Kelamin (L/P)': 'L',
-      'Tanggal Lahir (YYYY-MM-DD)': '2024-03-15',
-      'Posyandu': 'Melati 1',
-      'Desa/Kelurahan': 'Sukatani',
-      'Puskesmas': 'Puskesmas Sukatani',
-      'Tanggal Pengukuran (YYYY-MM-DD)': '2026-09-10',
-      'Berat Badan (kg)': 9.2,
-      'Tinggi Badan (cm)': 78.5,
-      'Lingkar Lengan LiLA (cm)': 12.8,
+      'Tanggal Lahir (YYYY-MM-DD)': '2024-03-24',
+      'Posyandu': 'Posyandu Kajulangko',
+      'Desa/Kelurahan': 'Kajulango',
+      'Puskesmas': 'Puskesmas Ampana Tete',
+      'Tanggal Pengukuran (YYYY-MM-DD)': '2026-08-01',
+      'Berat Badan (kg)': 9.3,
+      'Tinggi Badan (cm)': 80.5,
+      'Lingkar Lengan LiLA (cm)': 12.5,
       'Lingkar Kepala (cm)': 46.2,
-      'Hari PMT ke-': 45,
-      'Menu PMT Lokal': 'Nasi Tim Ikan Kembung Daun Kelor + Telur Puyuh',
+      'Hari PMT ke-': 30,
+      'Menu PMT Lokal': 'MENU NASI GORENG CERIA (Ayam Suwir, Telur, Wortel, Selada)',
       'Kepatuhan Konsumsi': 'Habis',
-      'Catatan Kesehatan': 'Anak aktif, nafsu makan meningkat',
+      'Catatan Kesehatan': 'Sasaran stunting (TB/U -2.43 SD). Nafsu makan membaik saat intervensi.',
     },
     {
-      'NIK': '3201026504220004',
-      'Nama Balita': 'Aisyah Putri Azzahra',
-      'Nama Ibu': 'Dewi Anggraini',
-      'Jenis Kelamin (L/P)': 'P',
-      'Tanggal Lahir (YYYY-MM-DD)': '2023-11-20',
-      'Posyandu': 'Mawar 2',
-      'Desa/Kelurahan': 'Mekarwangi',
-      'Puskesmas': 'Puskesmas Sukatani',
-      'Tanggal Pengukuran (YYYY-MM-DD)': '2026-09-12',
-      'Berat Badan (kg)': 10.1,
-      'Tinggi Badan (cm)': 82.0,
-      'Lingkar Lengan LiLA (cm)': 13.5,
-      'Lingkar Kepala (cm)': 47.0,
-      'Hari PMT ke-': 60,
-      'Menu PMT Lokal': 'Bubur Singkong Ayam Cincang + Tahu Wortel',
-      'Kepatuhan Konsumsi': '3/4 Porsi',
-      'Catatan Kesehatan': 'Tinggi badan bertambah 1.2 cm dalam 30 hari',
-    },
-    {
-      'NIK': '3201024209230007',
-      'Nama Balita': 'Kenzie Alfarezel',
+      'NIK': '720904161224001',
+      'Nama Balita': 'MOHAMMAD ALFA RISKI',
       'Nama Ibu': 'Rina Wahyuni',
       'Jenis Kelamin (L/P)': 'L',
-      'Tanggal Lahir (YYYY-MM-DD)': '2024-06-10',
-      'Posyandu': 'Kenanga 3',
-      'Desa/Kelurahan': 'Cisalak',
-      'Puskesmas': 'Puskesmas Sukatani',
-      'Tanggal Pengukuran (YYYY-MM-DD)': '2026-09-14',
+      'Tanggal Lahir (YYYY-MM-DD)': '2024-11-15',
+      'Posyandu': 'Posyandu Kajulangko',
+      'Desa/Kelurahan': 'Kajulango',
+      'Puskesmas': 'Puskesmas Ampana Tete',
+      'Tanggal Pengukuran (YYYY-MM-DD)': '2026-08-01',
       'Berat Badan (kg)': 8.4,
-      'Tinggi Badan (cm)': 74.0,
-      'Lingkar Lengan LiLA (cm)': 12.2,
-      'Lingkar Kepala (cm)': 45.1,
+      'Tinggi Badan (cm)': 75.0,
+      'Lingkar Lengan LiLA (cm)': 12.1,
+      'Lingkar Kepala (cm)': 45.0,
       'Hari PMT ke-': 30,
-      'Menu PMT Lokal': 'Nasi Sup Bola Daging Sayur Sop',
-      'Kepatuhan Konsumsi': '1/2 Porsi',
-      'Catatan Kesehatan': 'Sempat batuk pilek ringan minggu lalu',
+      'Menu PMT Lokal': 'MENU SOTO AYAM (Ayam Kampung, Bihun, Tauge, Kaldu Kaya Protein)',
+      'Kepatuhan Konsumsi': 'Habis',
+      'Catatan Kesehatan': 'Stunting Sangat Pendek (TB/U -3.48 SD). Memerlukan pendampingan makan intensif.',
+    },
+    {
+      'NIK': '7209044508230001',
+      'Nama Balita': 'NURHAFIZAH',
+      'Nama Ibu': 'Mariani',
+      'Jenis Kelamin (L/P)': 'P',
+      'Tanggal Lahir (YYYY-MM-DD)': '2024-08-29',
+      'Posyandu': 'Posyandu Kajulangko',
+      'Desa/Kelurahan': 'Kajulango',
+      'Puskesmas': 'Puskesmas Ampana Tete',
+      'Tanggal Pengukuran (YYYY-MM-DD)': '2026-08-01',
+      'Berat Badan (kg)': 8.9,
+      'Tinggi Badan (cm)': 79.5,
+      'Lingkar Lengan LiLA (cm)': 12.4,
+      'Lingkar Kepala (cm)': 45.8,
+      'Hari PMT ke-': 30,
+      'Menu PMT Lokal': 'MENU SUP BOLA-BOLA TAHU AYAM + WORTEL',
+      'Kepatuhan Konsumsi': 'Habis',
+      'Catatan Kesehatan': 'Sasaran stunting (TB/U -2.83 SD). Didampingi kader Posyandu saat makan.',
     }
   ];
 
@@ -151,9 +151,9 @@ export function downloadExcelTemplate() {
 }
 
 /**
- * Ekspor Data Balita PMT ke Excel
+ * Ekspor / Cetak Lembar Rekapitulasi Balita PMT ke Excel (.xlsx)
  */
-export function exportDataToExcel(data: BalitaPMT[], filename = 'Rekapitulasi_PMT_Stunting') {
+export function exportDataToExcel(data: BalitaPMT[], filename = 'Cetakan_Evaluasi_PMT_Stunting') {
   const exportRows = data.map((item, idx) => ({
     'No': idx + 1,
     'NIK': item.nik,
@@ -181,8 +181,65 @@ export function exportDataToExcel(data: BalitaPMT[], filename = 'Rekapitulasi_PM
   }));
 
   const ws = XLSX.utils.json_to_sheet(exportRows);
+
+  // Atur lebar kolom agar dokumen rapi saat dibuka dan dicetak di Microsoft Excel
+  ws['!cols'] = [
+    { wch: 6 },  // No
+    { wch: 20 }, // NIK
+    { wch: 25 }, // Nama Balita
+    { wch: 20 }, // Nama Ibu
+    { wch: 14 }, // JK
+    { wch: 15 }, // Tanggal Lahir
+    { wch: 12 }, // Usia (Bulan)
+    { wch: 16 }, // Desa
+    { wch: 20 }, // Posyandu
+    { wch: 22 }, // Puskesmas
+    { wch: 18 }, // Tanggal Pengukuran
+    { wch: 16 }, // Berat Badan (kg)
+    { wch: 16 }, // Tinggi Badan (cm)
+    { wch: 14 }, // Z-Score TB/U
+    { wch: 22 }, // Status Stunting
+    { wch: 14 }, // Z-Score BB/U
+    { wch: 22 }, // Status BB/U
+    { wch: 18 }, // Status BB/TB
+    { wch: 14 }, // Hari PMT
+    { wch: 35 }, // Menu PMT
+    { wch: 18 }, // Kepatuhan
+    { wch: 20 }, // Status Intervensi
+    { wch: 35 }, // Catatan Kesehatan
+  ];
+
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Data_PMT_Stunting');
+
+  // Sheet 1: Data Rekapitulasi Lengkap
+  XLSX.utils.book_append_sheet(wb, ws, 'Rekap_Balita_Stunting');
+
+  // Sheet 2: Ringkasan Resmi Laporan
+  const total = data.length;
+  const sangatPendek = data.filter(d => d.statusTBU === 'Sangat Pendek').length;
+  const pendek = data.filter(d => d.statusTBU === 'Pendek').length;
+  const patuh = data.filter(d => d.kepatuhan === 'Habis' || d.kepatuhan === '3/4 Porsi').length;
+  const currentDate = new Date().toLocaleDateString('id-ID', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+
+  const summaryRows = [
+    { 'Parameter': 'Judul Laporan', 'Keterangan': 'LAPORAN EVALUASI PEMBERIAN MAKANAN TAMBAHAN (PMT) BALITA STUNTING' },
+    { 'Parameter': 'Puskesmas Pengampu', 'Keterangan': data[0]?.puskesmas || 'Puskesmas Ampana Tete' },
+    { 'Parameter': 'Tanggal Cetak Laporan', 'Keterangan': currentDate },
+    { 'Parameter': 'Standar Baku Antropometri', 'Keterangan': 'Permenkes RI No. 2 Tahun 2020 (WHO Child Growth Standards)' },
+    { 'Parameter': 'Total Balita Sasaran PMT', 'Keterangan': `${total} Anak` },
+    { 'Parameter': 'Balita Kategori Sangat Pendek (Severely Stunted)', 'Keterangan': `${sangatPendek} Anak` },
+    { 'Parameter': 'Balita Kategori Pendek (Stunted)', 'Keterangan': `${pendek} Anak` },
+    { 'Parameter': 'Total Prevalensi Stunting dalam Program', 'Keterangan': `${sangatPendek + pendek} Anak (${total > 0 ? Math.round(((sangatPendek + pendek) / total) * 100) : 0}%)` },
+    { 'Parameter': 'Kepatuhan Konsumsi PMT Baik (Habis / 3/4 Porsi)', 'Keterangan': `${patuh} Anak (${total > 0 ? Math.round((patuh / total) * 100) : 0}%)` },
+  ];
+  const wsSummary = XLSX.utils.json_to_sheet(summaryRows);
+  wsSummary['!cols'] = [{ wch: 38 }, { wch: 60 }];
+  XLSX.utils.book_append_sheet(wb, wsSummary, 'Ringkasan_Laporan');
+
   XLSX.writeFile(wb, `${filename}_${new Date().toISOString().split('T')[0]}.xlsx`);
 }
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { BalitaPMT } from '../types';
-import { Users, AlertOctagon, CheckCircle, Award, TrendingUp, HeartHandshake } from 'lucide-react';
+import { Users, AlertOctagon, CheckCircle, Award, TrendingUp, HeartHandshake, ShieldCheck } from 'lucide-react';
 
 interface StatisticsOverviewProps {
   data: BalitaPMT[];
@@ -91,27 +91,52 @@ export default function StatisticsOverview({
           </div>
         </div>
 
-        {/* Card 3: Status Gizi Normal / Sesuai Target */}
-        <div 
-          onClick={() => onSelectStatus('Normal')}
-          className={`cursor-pointer rounded-2xl border p-4 shadow-xs transition ${
-            selectedStatus === 'Normal' ? 'border-emerald-400 bg-emerald-50/40 ring-2 ring-emerald-400/20' : 'border-emerald-200 bg-emerald-50/20 hover:border-emerald-300'
-          }`}
-        >
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-emerald-800 uppercase tracking-wider">Tinggi Normal / Lulus</span>
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700">
-              <CheckCircle className="h-4 w-4" />
+        {/* Card 3: Kategori Tingkat Stunting / Status TB/U */}
+        {normal === 0 ? (
+          <div 
+            onClick={() => onSelectStatus(selectedStatus === 'Sangat Pendek' ? 'Pendek' : 'Sangat Pendek')}
+            className={`cursor-pointer rounded-2xl border p-4 shadow-xs transition ${
+              selectedStatus === 'Sangat Pendek' || selectedStatus === 'Pendek'
+                ? 'border-amber-400 bg-amber-50/40 ring-2 ring-amber-400/20' 
+                : 'border-amber-200 bg-amber-50/20 hover:border-amber-300'
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-amber-900 uppercase tracking-wider">100% Sasaran Stunting</span>
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-100 text-amber-800">
+                <ShieldCheck className="h-4 w-4" />
+              </div>
             </div>
+            <div className="mt-2 flex items-baseline gap-2">
+              <span className="text-2xl font-bold text-amber-900">{sangatPendek} SP</span>
+              <span className="text-xs font-semibold text-amber-800">/ {pendek} Pendek</span>
+            </div>
+            <p className="mt-1 text-[11px] text-amber-800/80">
+              Semua balita memenuhi kriteria TB/U &lt; -2 SD Kemenkes
+            </p>
           </div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-emerald-700">{normal}</span>
-            <span className="text-xs font-semibold text-emerald-800">({normalPercentage}%)</span>
+        ) : (
+          <div 
+            onClick={() => onSelectStatus('Normal')}
+            className={`cursor-pointer rounded-2xl border p-4 shadow-xs transition ${
+              selectedStatus === 'Normal' ? 'border-emerald-400 bg-emerald-50/40 ring-2 ring-emerald-400/20' : 'border-emerald-200 bg-emerald-50/20 hover:border-emerald-300'
+            }`}
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-emerald-800 uppercase tracking-wider">Tinggi Normal / Lulus</span>
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700">
+                <CheckCircle className="h-4 w-4" />
+              </div>
+            </div>
+            <div className="mt-2 flex items-baseline gap-2">
+              <span className="text-2xl font-bold text-emerald-700">{normal}</span>
+              <span className="text-xs font-semibold text-emerald-800">({normalPercentage}%)</span>
+            </div>
+            <p className="mt-1 text-[11px] text-emerald-700/80">
+              {tinggi > 0 ? `Termasuk ${tinggi} kategori tinggi (>+3 SD)` : 'Sesuai dengan kurva pertumbuhan'}
+            </p>
           </div>
-          <p className="mt-1 text-[11px] text-emerald-700/80">
-            {tinggi > 0 ? `Termasuk ${tinggi} kategori tinggi (>+3 SD)` : 'Sesuai dengan kurva pertumbuhan'}
-          </p>
-        </div>
+        )}
 
         {/* Card 4: Kepatuhan Konsumsi PMT */}
         <div className="rounded-2xl border border-indigo-200 bg-indigo-50/20 p-4 shadow-xs">

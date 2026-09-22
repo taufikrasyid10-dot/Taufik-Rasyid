@@ -47,52 +47,6 @@ export interface BalitaPMT {
   riwayat: RiwayatPengukuran[];
 }
 
-export interface BalitaKegiatanEntry {
-  id: string;
-  namaBalita: string;
-  nik?: string;
-  fotoKegiatanUrl: string;
-  keterangan?: string;
-  geotagLocation?: string;
-  geotagDetail?: string;
-  geotagCoord?: string;
-  geotagTime?: string;
-}
-
-export interface DokumentasiKegiatanHari {
-  id: string;
-  tanggal: string; // e.g. "01-08-2026"
-  namaMenu: string; // e.g. "MENU NASI GORENG CERIA"
-  fotoMenuUrl: string;
-  geotagLocation?: string;
-  geotagDetail?: string;
-  geotagCoord?: string;
-  geotagTime?: string;
-  balitaList: BalitaKegiatanEntry[];
-}
-
-export interface DokumentasiBelanjaItem {
-  id: string;
-  nomor: number;
-  tanggal: string; // e.g. "01-08-2026"
-  namaMenu: string; // e.g. "MENU NASI GORENG CERIA"
-  fotoBahanUrl: string;
-  daftarBahan?: string;
-  geotagLocation?: string;
-  geotagDetail?: string;
-  geotagCoord?: string;
-  geotagTime?: string;
-}
-
-export interface PengaturanDokumentasi {
-  judulKegiatan: string;
-  judulBelanja: string;
-  bulanTahunAnggaran: string; // e.g. "BULAN AGUSTUS TAHUN ANGGARAN 2026"
-  defaultLokasi: string; // e.g. "Kecamatan Ampana Tete, Sulawesi Tengah, Indonesia"
-  defaultDetailAlamat: string; // e.g. "4j2h+23w, Kajulangko, Kec. Ampana Tete, Kabupaten Tojo Una-Una, Sulawesi Tengah 94684"
-  defaultKoordinat: string; // e.g. "Lat -0.900128° Long 121.627752°"
-}
-
 export interface UploadRowValidation {
   rowIndex: number;
   isValid: boolean;

@@ -1,6 +1,7 @@
 import React from 'react';
 import { BalitaPMT } from '../types';
-import { X, Printer } from 'lucide-react';
+import { X, Printer, FileSpreadsheet, Download, FileCheck } from 'lucide-react';
+import { exportDataToExcel } from '../utils/excelHelper';
 
 interface PrintReportModalProps {
   isOpen: boolean;
@@ -17,8 +18,12 @@ export default function PrintReportModal({ isOpen, onClose, data }: PrintReportM
   const normal = data.filter(d => d.statusTBU === 'Normal').length;
   const patuh = data.filter(d => d.kepatuhan === 'Habis' || d.kepatuhan === '3/4 Porsi').length;
 
-  const handlePrint = () => {
+  const handlePrintPdf = () => {
     window.print();
+  };
+
+  const handleExportExcel = () => {
+    exportDataToExcel(data, 'Cetakan_Evaluasi_PMT_Stunting');
   };
 
   const currentDate = new Date().toLocaleDateString('id-ID', {
@@ -34,27 +39,48 @@ export default function PrintReportModal({ isOpen, onClose, data }: PrintReportM
         className="relative flex max-h-[95vh] w-full max-w-4xl flex-col rounded-2xl bg-white shadow-2xl overflow-hidden border border-slate-200 print:border-none print:shadow-none print:max-h-none print:w-full"
       >
         {/* Modal Bar (Hidden on Print) */}
-        <div className="flex items-center justify-between border-b border-slate-200 px-6 py-3.5 bg-slate-50 print:hidden">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-200 px-6 py-3.5 bg-slate-50 print:hidden">
           <div>
-            <h2 className="text-sm font-bold text-slate-800">
-              Pratinjau Lembar Rekapitulasi Evaluasi PMT Stunting
-            </h2>
-            <p className="text-xs text-slate-500">Format cetak resmi laporan posyandu / puskesmas</p>
+            <div className="flex items-center gap-2">
+              <h2 className="text-sm font-bold text-slate-800">
+                Cetakan Laporan Evaluasi PMT Stunting
+              </h2>
+              <span className="rounded-full bg-emerald-100 text-emerald-800 px-2 py-0.5 text-[10px] font-bold">
+                Excel &amp; PDF
+              </span>
+            </div>
+            <p className="text-xs text-slate-500">Pilih format cetakan resmi yang dibutuhkan: Excel (.xlsx) atau Dokumen PDF</p>
           </div>
-          <div className="flex items-center gap-2">
+          
+          <div className="flex items-center gap-2 self-end sm:self-auto">
+            {/* Tombol Cetak Excel */}
             <button
               type="button"
-              id="btn-trigger-print"
-              onClick={handlePrint}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3.5 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-emerald-700 transition"
+              id="btn-cetak-excel-modal"
+              onClick={handleExportExcel}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-600/30 bg-emerald-50 px-3 py-1.5 text-xs font-semibold text-emerald-800 shadow-xs hover:bg-emerald-100 hover:border-emerald-500 active:scale-95 transition"
+              title="Unduh Cetakan Laporan Format Excel (.xlsx)"
             >
-              <Printer className="h-3.5 w-3.5" />
-              <span>Cetak / Simpan PDF</span>
+              <FileSpreadsheet className="h-4 w-4 text-emerald-700" />
+              <span>Cetak Excel</span>
             </button>
+
+            {/* Tombol Cetak PDF */}
+            <button
+              type="button"
+              id="btn-cetak-pdf-modal"
+              onClick={handlePrintPdf}
+              className="inline-flex items-center gap-1.5 rounded-lg bg-slate-900 px-3.5 py-1.5 text-xs font-semibold text-white shadow-xs hover:bg-slate-800 active:scale-95 transition"
+              title="Cetak langsung atau simpan dokumen sebagai PDF"
+            >
+              <Printer className="h-4 w-4" />
+              <span>Cetak PDF</span>
+            </button>
+
             <button
               type="button"
               onClick={onClose}
-              className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-200 hover:text-slate-700 transition"
+              className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-200 hover:text-slate-700 transition ml-1"
             >
               <X className="h-5 w-5" />
             </button>
@@ -63,6 +89,73 @@ export default function PrintReportModal({ isOpen, onClose, data }: PrintReportM
 
         {/* Printable Document Area */}
         <div className="overflow-y-auto p-8 font-sans text-slate-900 space-y-6 print:p-4 print:overflow-visible">
+          
+          {/* Pilihan Cetak (Hidden on Print) */}
+          <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-4 print:hidden space-y-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                  <FileCheck className="h-4 w-4 text-emerald-600" />
+                  Pilihan Format Cetak Laporan
+                </h3>
+                <p className="text-[11px] text-slate-500">Pilih salah satu format cetakan di bawah ini sesuai kebutuhan:</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* Opsi 1: Excel */}
+              <button
+                type="button"
+                id="btn-pilih-cetak-excel"
+                onClick={handleExportExcel}
+                className="flex items-start gap-3 rounded-xl border border-emerald-300 bg-emerald-50/60 p-3.5 text-left transition hover:bg-emerald-100 hover:border-emerald-500 hover:shadow-sm active:scale-98 group cursor-pointer"
+              >
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-xs group-hover:bg-emerald-700 transition">
+                  <FileSpreadsheet className="h-5 w-5" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-1">
+                    <span className="text-xs font-bold text-emerald-950">1. Cetakan Excel (.xlsx)</span>
+                    <span className="rounded-full bg-emerald-200/80 px-2 py-0.5 text-[10px] font-bold text-emerald-900">
+                      Spreadsheet
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-emerald-800/90 mt-0.5 leading-snug">
+                    Unduh file Excel lengkap 2 sheet: Rekap Balita Stunting &amp; Lembar Ringkasan Resmi.
+                  </p>
+                  <span className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 mt-2 group-hover:underline">
+                    <Download className="h-3.5 w-3.5" /> Unduh File Excel Sekarang
+                  </span>
+                </div>
+              </button>
+
+              {/* Opsi 2: PDF */}
+              <button
+                type="button"
+                id="btn-pilih-cetak-pdf"
+                onClick={handlePrintPdf}
+                className="flex items-start gap-3 rounded-xl border border-slate-300 bg-white p-3.5 text-left transition hover:bg-slate-100 hover:border-slate-400 hover:shadow-sm active:scale-98 group cursor-pointer"
+              >
+                <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-slate-900 text-white shadow-xs group-hover:bg-slate-800 transition">
+                  <Printer className="h-5 w-5" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-1">
+                    <span className="text-xs font-bold text-slate-900">2. Cetakan Dokumen PDF</span>
+                    <span className="rounded-full bg-slate-200 px-2 py-0.5 text-[10px] font-bold text-slate-800">
+                      Cetak / PDF
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-slate-600 mt-0.5 leading-snug">
+                    Cetak langsung ke kertas printer (A4/F4) atau simpan sebagai dokumen PDF bertanda tangan.
+                  </p>
+                  <span className="inline-flex items-center gap-1 text-xs font-bold text-slate-900 mt-2 group-hover:underline">
+                    <Printer className="h-3.5 w-3.5" /> Cetak / Simpan PDF Sekarang
+                  </span>
+                </div>
+              </button>
+            </div>
+          </div>
           
           {/* Official Letterhead (Kop Surat Laporan) */}
           <div className="text-center border-b-2 border-slate-800 pb-4">
@@ -85,11 +178,17 @@ export default function PrintReportModal({ isOpen, onClose, data }: PrintReportM
             </div>
             <div>
               <span className="text-slate-500 block">Total Kasus Stunting</span>
-              <strong className="text-base font-bold text-rose-700">{sangatPendek + pendek} Anak</strong>
+              <strong className="text-base font-bold text-rose-700">
+                {sangatPendek + pendek} Anak ({total > 0 ? Math.round(((sangatPendek + pendek) / total) * 100) : 0}%)
+              </strong>
             </div>
             <div>
-              <span className="text-slate-500 block">Status Tinggi Normal</span>
-              <strong className="text-base font-bold text-emerald-700">{normal} Anak</strong>
+              <span className="text-slate-500 block">
+                {normal === 0 ? 'Sangat Pendek / Pendek' : 'Status Tinggi Normal'}
+              </span>
+              <strong className={`text-base font-bold ${normal === 0 ? 'text-amber-800' : 'text-emerald-700'}`}>
+                {normal === 0 ? `${sangatPendek} SP / ${pendek} P` : `${normal} Anak`}
+              </strong>
             </div>
             <div>
               <span className="text-slate-500 block">Kepatuhan Makan Baik</span>

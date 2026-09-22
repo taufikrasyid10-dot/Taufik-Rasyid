@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { BalitaPMT, StatusTBU, TingkatKepatuhan } from '../types';
 import {
   Search,
@@ -14,6 +14,8 @@ import {
   AlertCircle,
   CheckSquare,
   Square,
+  Printer,
+  ChevronDown,
 } from 'lucide-react';
 import { exportDataToExcel, exportDataToCSV } from '../utils/excelHelper';
 
@@ -23,6 +25,7 @@ interface PmtDataTableProps {
   onEditBalita: (balita: BalitaPMT) => void;
   onDeleteBalita: (id: string) => void;
   onAddBalita: () => void;
+  onOpenPrintReport?: () => void;
   selectedPosyandu: string;
   selectedStatus: string;
 }
@@ -33,6 +36,7 @@ export default function PmtDataTable({
   onEditBalita,
   onDeleteBalita,
   onAddBalita,
+  onOpenPrintReport,
   selectedPosyandu,
   selectedStatus,
 }: PmtDataTableProps) {
@@ -43,6 +47,18 @@ export default function PmtDataTable({
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 8;
+  const [isTablePrintMenuOpen, setIsTablePrintMenuOpen] = useState(false);
+  const tablePrintMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (tablePrintMenuRef.current && !tablePrintMenuRef.current.contains(event.target as Node)) {
+        setIsTablePrintMenuOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // Sync prop changes
   React.useEffect(() => {
@@ -151,27 +167,92 @@ export default function PmtDataTable({
 
           {/* Action Tools */}
           <div className="flex items-center gap-2">
-            <button
-              type="button"
-              id="btn-export-excel"
-              onClick={() => handleExportSelectedOrAll('xlsx')}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 shadow-2xs hover:bg-slate-50 transition"
-              title="Ekspor ke format Excel .xlsx"
-            >
-              <FileSpreadsheet className="h-4 w-4 text-emerald-600" />
-              <span>Ekspor Excel</span>
-            </button>
+            {/* Tombol Cetak Laporan (Gabungan Pilihan Excel / PDF / CSV) */}
+            <div className="relative" ref={tablePrintMenuRef}>
+              <div className="inline-flex rounded-lg shadow-2xs">
+                <button
+                  type="button"
+                  id="btn-table-cetak-laporan"
+                  onClick={() => {
+                    if (onOpenPrintReport) {
+                      onOpenPrintReport();
+                    } else {
+                      handleExportSelectedOrAll('xlsx');
+                    }
+                  }}
+                  className="inline-flex items-center gap-1.5 rounded-l-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition"
+                  title="Cetak Laporan (Pilihan Excel atau PDF)"
+                >
+                  <Printer className="h-4 w-4 text-slate-700" />
+                  <span>Cetak Laporan</span>
+                </button>
+                <button
+                  type="button"
+                  id="btn-table-toggle-print-dropdown"
+                  onClick={() => setIsTablePrintMenuOpen(!isTablePrintMenuOpen)}
+                  className="inline-flex items-center rounded-r-lg border border-l-0 border-slate-300 bg-white px-2 py-2 text-slate-600 hover:bg-slate-50 transition"
+                  title="Pilihan Format Cetak (Excel / PDF)"
+                >
+                  <ChevronDown className="h-3.5 w-3.5" />
+                </button>
+              </div>
 
-            <button
-              type="button"
-              id="btn-export-csv"
-              onClick={() => handleExportSelectedOrAll('csv')}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-medium text-slate-700 shadow-2xs hover:bg-slate-50 transition"
-              title="Ekspor ke CSV"
-            >
-              <FileText className="h-4 w-4 text-slate-600" />
-              <span className="hidden sm:inline">CSV</span>
-            </button>
+              {isTablePrintMenuOpen && (
+                <div className="absolute right-0 mt-1.5 w-60 rounded-xl border border-slate-200 bg-white p-1.5 shadow-xl ring-1 ring-black/5 z-40">
+                  <div className="px-2.5 py-1.5 border-b border-slate-100">
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Pilihan Format Cetak</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsTablePrintMenuOpen(false);
+                      handleExportSelectedOrAll('xlsx');
+                    }}
+                    className="w-full flex items-start gap-2.5 rounded-lg px-2.5 py-2 text-left hover:bg-emerald-50 transition group"
+                  >
+                    <FileSpreadsheet className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
+                    <div>
+                      <span className="block text-xs font-bold text-slate-800 group-hover:text-emerald-900">1. Cetak Excel (.xlsx)</span>
+                      <span className="block text-[11px] text-slate-500">
+                        {selectedIds.length > 0 ? `Unduh ${selectedIds.length} data terpilih` : 'Unduh seluruh data & ringkasan'}
+                      </span>
+                    </div>
+                  </button>
+
+                  {onOpenPrintReport && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsTablePrintMenuOpen(false);
+                        onOpenPrintReport();
+                      }}
+                      className="w-full flex items-start gap-2.5 rounded-lg px-2.5 py-2 text-left hover:bg-slate-100 transition group"
+                    >
+                      <Printer className="h-4 w-4 text-slate-700 mt-0.5 shrink-0" />
+                      <div>
+                        <span className="block text-xs font-bold text-slate-800 group-hover:text-slate-950">2. Cetak Dokumen PDF</span>
+                        <span className="block text-[11px] text-slate-500">Lembar resmi siap print / simpan PDF</span>
+                      </div>
+                    </button>
+                  )}
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsTablePrintMenuOpen(false);
+                      handleExportSelectedOrAll('csv');
+                    }}
+                    className="w-full flex items-start gap-2.5 rounded-lg px-2.5 py-2 text-left hover:bg-slate-50 transition group border-t border-slate-100 mt-1 pt-1.5"
+                  >
+                    <FileText className="h-4 w-4 text-slate-500 mt-0.5 shrink-0" />
+                    <div>
+                      <span className="block text-xs font-medium text-slate-700">3. Format CSV</span>
+                      <span className="block text-[11px] text-slate-400">File teks pemisah koma</span>
+                    </div>
+                  </button>
+                </div>
+              )}
+            </div>
 
             <button
               type="button"
