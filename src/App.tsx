@@ -103,7 +103,7 @@ export default function App() {
               <div className="space-y-1.5 max-w-2xl">
                 <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-semibold text-emerald-300 backdrop-blur-md border border-emerald-400/30">
                   <ShieldCheck className="h-3.5 w-3.5" />
-                  Intervensi PMT Balita Stunting Kemenkes RI
+                  Yuli Usman
                 </div>
                 <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
                   Evaluasi Balita Stunting

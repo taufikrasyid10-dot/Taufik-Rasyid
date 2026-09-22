@@ -74,6 +74,7 @@ export default function ManualEntryModal({
       setTanggalLahir('2024-03-01');
       setBeratBadan(9.0);
       setTinggiBadan(78.0);
+      setLingkarKepala(46.0);
       setHariPMT(1);
       setKepatuhan('Habis');
       setCatatanKesehatan('');
@@ -354,10 +355,10 @@ export default function ManualEntryModal({
             {/* Section 2: Hasil Pengukuran & Intervensi PMT */}
             <div className="space-y-4">
               <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500">
-                2. Data Pengukuran & Intervensi PMT
+                2. Data Pengukuran Antropometri
               </h3>
 
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">
                     Tanggal Pengukuran *
@@ -405,61 +406,17 @@ export default function ManualEntryModal({
 
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">
-                    LiLA (Lingkar Lengan, cm)
+                    Lingkar Kepala (cm)
                   </label>
                   <input
                     type="number"
                     step="0.1"
-                    value={lingkarLengan || ''}
-                    onChange={(e) => setLingkarLengan(parseFloat(e.target.value) || undefined)}
-                    placeholder="12.5"
+                    value={lingkarKepala || ''}
+                    onChange={(e) => setLingkarKepala(parseFloat(e.target.value) || undefined)}
+                    placeholder="Contoh: 46.0"
                     className="w-full rounded-lg border border-slate-200 px-3 py-2 text-xs font-mono text-slate-900 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
                   />
                 </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
-                    Hari PMT ke-
-                  </label>
-                  <input
-                    type="number"
-                    min="1"
-                    max="180"
-                    value={hariPMT}
-                    onChange={(e) => setHariPMT(parseInt(e.target.value) || 1)}
-                    className="w-full rounded-lg border border-slate-200 px-3 py-2 text-xs font-mono text-slate-900 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-700 mb-1">
-                    Kepatuhan Konsumsi
-                  </label>
-                  <select
-                    value={kepatuhan}
-                    onChange={(e) => setKepatuhan(e.target.value as TingkatKepatuhan)}
-                    className="w-full rounded-lg border border-slate-200 px-3 py-2 text-xs text-slate-900 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-                  >
-                    <option value="Habis">Habis (100%)</option>
-                    <option value="3/4 Porsi">3/4 Porsi (75%)</option>
-                    <option value="1/2 Porsi">1/2 Porsi (50%)</option>
-                    <option value="< 1/2 Porsi">&lt; 1/2 Porsi (25%)</option>
-                    <option value="Tidak Dikonsumsi">Tidak Dikonsumsi</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-700 mb-1">
-                  Menu PMT Pangan Lokal
-                </label>
-                <input
-                  type="text"
-                  value={menuPMT}
-                  onChange={(e) => setMenuPMT(e.target.value)}
-                  placeholder="Contoh: Nasi Tim Ikan Kembung Daun Kelor + Telur Puyuh"
-                  className="w-full rounded-lg border border-slate-200 px-3 py-2 text-xs text-slate-900 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
-                />
               </div>
 
               <div>

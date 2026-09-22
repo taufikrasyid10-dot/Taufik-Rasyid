@@ -46,17 +46,14 @@ export default function Navbar({
               <Activity className="h-5 w-5" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <span className="text-base font-bold tracking-tight text-slate-900">
-                  PMT Stanting
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-sm sm:text-base font-bold tracking-tight text-slate-900">
+                  DAFTAR ANAK BERDASARKAN STATUS GIZI
                 </span>
                 <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700 border border-emerald-200">
                   <ShieldCheck className="h-3 w-3" /> Standar Kemenkes RI
                 </span>
               </div>
-              <p className="text-xs text-slate-500 hidden sm:block">
-                Sistem Penguplotan Data Antropometri & Evaluasi Gizi Balita
-              </p>
             </div>
           </div>
 

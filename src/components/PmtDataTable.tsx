@@ -42,7 +42,7 @@ export default function PmtDataTable({
 }: PmtDataTableProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>(selectedStatus || 'Semua');
-  const [filterKepatuhan, setFilterKepatuhan] = useState<string>('Semua');
+  const [filterStatusGizi, setFilterStatusGizi] = useState<string>('Semua');
   const [filterJk, setFilterJk] = useState<string>('Semua');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -75,15 +75,15 @@ export default function PmtDataTable({
         return false;
       }
 
-      // Status filter
+      // Status Stunting filter
       if (filterStatus === 'Stunting') {
         if (item.statusTBU !== 'Sangat Pendek' && item.statusTBU !== 'Pendek') return false;
       } else if (filterStatus !== 'Semua' && item.statusTBU !== filterStatus) {
         return false;
       }
 
-      // Kepatuhan filter
-      if (filterKepatuhan !== 'Semua' && item.kepatuhan !== filterKepatuhan) {
+      // Status Gizi filter (BB/TB)
+      if (filterStatusGizi !== 'Semua' && item.statusBBTB !== filterStatusGizi) {
         return false;
       }
 
@@ -105,7 +105,7 @@ export default function PmtDataTable({
 
       return true;
     });
-  }, [data, selectedPosyandu, filterStatus, filterKepatuhan, filterJk, searchTerm]);
+  }, [data, selectedPosyandu, filterStatus, filterStatusGizi, filterJk, searchTerm]);
 
   // Pagination
   const totalPages = Math.ceil(filteredData.length / pageSize) || 1;
@@ -157,8 +157,8 @@ export default function PmtDataTable({
       <div className="p-4 sm:p-5 border-b border-slate-100 space-y-3">
         <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-3">
           <div>
-            <h2 className="text-base font-bold text-slate-900">
-              Data Penguplotan & Rekapitulasi Balita PMT
+            <h2 className="text-base font-bold text-slate-900 tracking-tight">
+              DATA REKAPITULASI BALITA
             </h2>
             <p className="text-xs text-slate-500">
               Menampilkan {filteredData.length} dari {data.length} balita tercatat
@@ -267,7 +267,7 @@ export default function PmtDataTable({
         </div>
 
         {/* Filter Bar */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2.5 pt-1">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 pt-1">
           {/* Search Box */}
           <div className="relative">
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
@@ -304,23 +304,24 @@ export default function PmtDataTable({
             </select>
           </div>
 
-          {/* Kepatuhan Filter */}
+          {/* Status Gizi Filter */}
           <div className="flex items-center gap-2">
             <select
-              aria-label="Filter Kepatuhan Konsumsi"
-              value={filterKepatuhan}
+              aria-label="Filter Status Gizi Balita"
+              value={filterStatusGizi}
               onChange={(e) => {
-                setFilterKepatuhan(e.target.value);
+                setFilterStatusGizi(e.target.value);
                 setCurrentPage(1);
               }}
               className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
             >
-              <option value="Semua">Semua Kepatuhan Makan</option>
-              <option value="Habis">Habis (100%)</option>
-              <option value="3/4 Porsi">3/4 Porsi</option>
-              <option value="1/2 Porsi">1/2 Porsi</option>
-              <option value="< 1/2 Porsi">&lt; 1/2 Porsi</option>
-              <option value="Tidak Dikonsumsi">Tidak Dikonsumsi</option>
+              <option value="Semua">Semua Status Gizi</option>
+              <option value="Gizi Baik">Gizi Baik</option>
+              <option value="Gizi Kurang">Gizi Kurang</option>
+              <option value="Gizi Buruk">Gizi Buruk</option>
+              <option value="Berisiko Lebih">Berisiko Lebih</option>
+              <option value="Gizi Lebih">Gizi Lebih</option>
+              <option value="Obesitas">Obesitas</option>
             </select>
           </div>
 
@@ -394,6 +395,7 @@ export default function PmtDataTable({
               <th className="px-3 py-3">Posyandu / Desa</th>
               <th className="px-3 py-3">TB / BB</th>
               <th className="px-3 py-3">Status Stunting (TB/U)</th>
+              <th className="px-3 py-3">Status Gizi Balita</th>
               <th className="px-3 py-3">Siklus PMT</th>
               <th className="px-3 py-3">Kepatuhan</th>
               <th className="px-3 py-3 text-right">Aksi</th>
@@ -402,7 +404,7 @@ export default function PmtDataTable({
           <tbody className="divide-y divide-slate-100">
             {paginatedData.length === 0 ? (
               <tr>
-                <td colSpan={9} className="py-12 text-center text-slate-400">
+                <td colSpan={10} className="py-12 text-center text-slate-400">
                   <div className="flex flex-col items-center justify-center gap-2">
                     <AlertCircle className="h-8 w-8 text-slate-300" />
                     <p className="font-semibold text-slate-600">Tidak ada data balita yang cocok</p>
@@ -483,6 +485,28 @@ export default function PmtDataTable({
                       </div>
                       <div className="text-[10px] font-mono text-slate-500 mt-0.5">
                         Z-Score: {balita.zScoreTBU > 0 ? `+${balita.zScoreTBU}` : balita.zScoreTBU} SD
+                      </div>
+                    </td>
+
+                    {/* Status Gizi Balita */}
+                    <td className="px-3 py-3">
+                      <div className="flex items-center gap-1.5">
+                        <span
+                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold ${
+                            balita.statusBBTB === 'Gizi Buruk'
+                              ? 'bg-rose-100 text-rose-800'
+                              : balita.statusBBTB === 'Gizi Kurang'
+                              ? 'bg-amber-100 text-amber-800'
+                              : balita.statusBBTB === 'Gizi Baik'
+                              ? 'bg-emerald-100 text-emerald-800'
+                              : 'bg-blue-100 text-blue-800'
+                          }`}
+                        >
+                          {balita.statusBBTB || 'Gizi Baik'}
+                        </span>
+                      </div>
+                      <div className="text-[10px] text-slate-500 mt-0.5 font-mono">
+                        BB/U: <span className="font-semibold text-slate-700">{balita.statusBBU || 'Normal'}</span> ({balita.zScoreBBU > 0 ? `+${balita.zScoreBBU}` : balita.zScoreBBU} SD)
                       </div>
                     </td>
 

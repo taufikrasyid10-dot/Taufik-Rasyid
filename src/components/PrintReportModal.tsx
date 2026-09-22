@@ -211,6 +211,7 @@ export default function PrintReportModal({ isOpen, onClose, data }: PrintReportM
                   <th className="p-2 border-r border-slate-300 text-center">BB (kg)</th>
                   <th className="p-2 border-r border-slate-300 text-center">Z-Score TB/U</th>
                   <th className="p-2 border-r border-slate-300">Status Stunting</th>
+                  <th className="p-2 border-r border-slate-300">Status Gizi Balita</th>
                   <th className="p-2 text-center">Hari PMT</th>
                 </tr>
               </thead>
@@ -230,6 +231,10 @@ export default function PrintReportModal({ isOpen, onClose, data }: PrintReportM
                     </td>
                     <td className="p-2 border-r border-slate-200 font-semibold text-[11px]">
                       {item.statusTBU}
+                    </td>
+                    <td className="p-2 border-r border-slate-200 text-[11px]">
+                      <span className="font-semibold text-slate-800">{item.statusBBTB || 'Gizi Baik'}</span>
+                      <span className="text-slate-500 block text-[10px]">BB/U: {item.statusBBU || 'Normal'}</span>
                     </td>
                     <td className="p-2 text-center font-mono">Hari ke-{item.hariPMT}</td>
                   </tr>

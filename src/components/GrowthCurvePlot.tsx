@@ -381,9 +381,11 @@ export default function GrowthCurvePlot({ balita, onClose, onSelectAnother, allB
                     Pengukuran Hari ke-{activePoint.hariPMT} ({activePoint.tanggal})
                   </span>
                 </div>
-                <div className="text-xs font-medium text-emerald-800">
-                  Menu: <span className="font-semibold text-emerald-950">{balita.menuPMT}</span>
-                </div>
+                {balita.menuPMT ? (
+                  <div className="text-xs font-medium text-emerald-800">
+                    Menu: <span className="font-semibold text-emerald-950">{balita.menuPMT}</span>
+                  </div>
+                ) : null}
               </div>
 
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-3 text-xs">

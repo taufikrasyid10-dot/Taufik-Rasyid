@@ -1,6 +1,6 @@
 import React from 'react';
 import { BalitaPMT } from '../types';
-import { Users, AlertOctagon, CheckCircle, Award, TrendingUp, HeartHandshake, ShieldCheck } from 'lucide-react';
+import { Users, AlertOctagon, CheckCircle, ShieldCheck } from 'lucide-react';
 
 interface StatisticsOverviewProps {
   data: BalitaPMT[];
@@ -29,31 +29,23 @@ export default function StatisticsOverview({
   const stuntingPercentage = total > 0 ? ((totalStunting / total) * 100).toFixed(1) : '0';
   const normalPercentage = total > 0 ? ((normal / total) * 100).toFixed(1) : '0';
 
-  // Kepatuhan
-  const kepatuhanHabis = data.filter(d => d.kepatuhan === 'Habis').length;
-  const kepatuhanPersen = total > 0 ? ((kepatuhanHabis / total) * 100).toFixed(1) : '0';
-
-  // Intervensi membaik / sesuai target
-  const membaik = data.filter(d => d.statusIntervensi === 'Membaik' || d.statusIntervensi === 'Sesuai Target').length;
-  const perluTindakLanjut = data.filter(d => d.statusIntervensi === 'Perlu Tindak Lanjut' || d.statusIntervensi === 'Kritis').length;
-
   // Posyandu breakdown
   const posyanduList = Array.from(new Set(data.map(d => d.posyandu))).filter(Boolean);
 
   return (
     <div className="space-y-4">
-      {/* 4 Core Summary Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      {/* Core Summary Cards - Sejajar 3 Kolom */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-stretch">
         
-        {/* Card 1: Total Sasaran */}
+        {/* Card 1: Total Balita */}
         <div 
           onClick={() => onSelectStatus('Semua')}
-          className={`cursor-pointer rounded-2xl border p-4 shadow-xs transition ${
+          className={`cursor-pointer rounded-2xl border p-4 shadow-xs transition flex flex-col justify-between h-full ${
             selectedStatus === 'Semua' ? 'border-slate-400 bg-white ring-2 ring-slate-400/20' : 'border-slate-200 bg-white hover:border-slate-300'
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Balita PMT</span>
+            <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Balita</span>
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-600">
               <Users className="h-4 w-4" />
             </div>
@@ -67,15 +59,15 @@ export default function StatisticsOverview({
           </p>
         </div>
 
-        {/* Card 2: Balita Stunting */}
+        {/* Card 2: Kasus Stunting */}
         <div 
           onClick={() => onSelectStatus('Stunting')}
-          className={`cursor-pointer rounded-2xl border p-4 shadow-xs transition ${
+          className={`cursor-pointer rounded-2xl border p-4 shadow-xs transition flex flex-col justify-between h-full ${
             selectedStatus === 'Stunting' ? 'border-rose-400 bg-rose-50/40 ring-2 ring-rose-400/20' : 'border-rose-200 bg-rose-50/20 hover:border-rose-300'
           }`}
         >
           <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-rose-800 uppercase tracking-wider">Kasus Stunting (TB/U &lt; -2 SD)</span>
+            <span className="text-xs font-semibold text-rose-800 uppercase tracking-wider">Kasus Stunting</span>
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-100 text-rose-700">
               <AlertOctagon className="h-4 w-4" />
             </div>
@@ -84,75 +76,35 @@ export default function StatisticsOverview({
             <span className="text-2xl font-bold text-rose-600">{totalStunting}</span>
             <span className="text-xs font-semibold text-rose-700">({stuntingPercentage}%)</span>
           </div>
-          <div className="mt-1 flex items-center gap-2 text-[11px] text-rose-700/80">
+          <p className="mt-1 text-[11px] text-rose-700/80">
+            TB/U &lt; -2 SD Standar WHO
+          </p>
+        </div>
+
+        {/* Card 3: Sasaran Stunting */}
+        <div 
+          onClick={() => onSelectStatus(selectedStatus === 'Sangat Pendek' ? 'Pendek' : 'Sangat Pendek')}
+          className={`cursor-pointer rounded-2xl border p-4 shadow-xs transition flex flex-col justify-between h-full ${
+            selectedStatus === 'Sangat Pendek' || selectedStatus === 'Pendek'
+              ? 'border-amber-400 bg-amber-50/40 ring-2 ring-amber-400/20' 
+              : 'border-amber-200 bg-amber-50/20 hover:border-amber-300'
+          }`}
+        >
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold text-amber-900 uppercase tracking-wider">Sasaran Stunting</span>
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-100 text-amber-800">
+              <ShieldCheck className="h-4 w-4" />
+            </div>
+          </div>
+          <div className="mt-2 flex items-baseline gap-2">
+            <span className="text-2xl font-bold text-amber-900">{totalStunting}</span>
+            <span className="text-xs font-semibold text-amber-800">Sasaran Prioritas</span>
+          </div>
+          <div className="mt-1 flex items-center gap-2 text-[11px] text-amber-800/80">
             <span>Sangat Pendek: {sangatPendek}</span>
             <span>•</span>
             <span>Pendek: {pendek}</span>
           </div>
-        </div>
-
-        {/* Card 3: Kategori Tingkat Stunting / Status TB/U */}
-        {normal === 0 ? (
-          <div 
-            onClick={() => onSelectStatus(selectedStatus === 'Sangat Pendek' ? 'Pendek' : 'Sangat Pendek')}
-            className={`cursor-pointer rounded-2xl border p-4 shadow-xs transition ${
-              selectedStatus === 'Sangat Pendek' || selectedStatus === 'Pendek'
-                ? 'border-amber-400 bg-amber-50/40 ring-2 ring-amber-400/20' 
-                : 'border-amber-200 bg-amber-50/20 hover:border-amber-300'
-            }`}
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-amber-900 uppercase tracking-wider">100% Sasaran Stunting</span>
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-amber-100 text-amber-800">
-                <ShieldCheck className="h-4 w-4" />
-              </div>
-            </div>
-            <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl font-bold text-amber-900">{sangatPendek} SP</span>
-              <span className="text-xs font-semibold text-amber-800">/ {pendek} Pendek</span>
-            </div>
-            <p className="mt-1 text-[11px] text-amber-800/80">
-              Semua balita memenuhi kriteria TB/U &lt; -2 SD Kemenkes
-            </p>
-          </div>
-        ) : (
-          <div 
-            onClick={() => onSelectStatus('Normal')}
-            className={`cursor-pointer rounded-2xl border p-4 shadow-xs transition ${
-              selectedStatus === 'Normal' ? 'border-emerald-400 bg-emerald-50/40 ring-2 ring-emerald-400/20' : 'border-emerald-200 bg-emerald-50/20 hover:border-emerald-300'
-            }`}
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-semibold text-emerald-800 uppercase tracking-wider">Tinggi Normal / Lulus</span>
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700">
-                <CheckCircle className="h-4 w-4" />
-              </div>
-            </div>
-            <div className="mt-2 flex items-baseline gap-2">
-              <span className="text-2xl font-bold text-emerald-700">{normal}</span>
-              <span className="text-xs font-semibold text-emerald-800">({normalPercentage}%)</span>
-            </div>
-            <p className="mt-1 text-[11px] text-emerald-700/80">
-              {tinggi > 0 ? `Termasuk ${tinggi} kategori tinggi (>+3 SD)` : 'Sesuai dengan kurva pertumbuhan'}
-            </p>
-          </div>
-        )}
-
-        {/* Card 4: Kepatuhan Konsumsi PMT */}
-        <div className="rounded-2xl border border-indigo-200 bg-indigo-50/20 p-4 shadow-xs">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-semibold text-indigo-900 uppercase tracking-wider">Kepatuhan Makan 100%</span>
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-100 text-indigo-700">
-              <Award className="h-4 w-4" />
-            </div>
-          </div>
-          <div className="mt-2 flex items-baseline gap-2">
-            <span className="text-2xl font-bold text-indigo-950">{kepatuhanHabis}</span>
-            <span className="text-xs font-semibold text-indigo-800">({kepatuhanPersen}% Porsi Habis)</span>
-          </div>
-          <p className="mt-1 text-[11px] text-indigo-800/80">
-            {membaik} balita menunjukkan progres membaik
-          </p>
         </div>
 
       </div>
