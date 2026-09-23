@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { BalitaPMT } from '../types';
-import { getWHOGrowthCurveData } from '../utils/nutritionStandards';
+import { getWHOGrowthCurveData, getStatusGiziBalita, getFormattedTanggalPosyandu } from '../utils/nutritionStandards';
 import { TrendingUp, X, CheckCircle, AlertTriangle, Calendar, User, Scale, Ruler, Award } from 'lucide-react';
 
 interface GrowthCurvePlotProps {
@@ -103,7 +103,7 @@ export default function GrowthCurvePlot({ balita, onClose, onSelectAnother, allB
               <TrendingUp className="h-5 w-5" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 flex-wrap">
                 <h2 className="text-base font-bold text-slate-900">{balita.namaBalita}</h2>
                 <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold ${
                   balita.statusTBU === 'Sangat Pendek'
@@ -112,11 +112,14 @@ export default function GrowthCurvePlot({ balita, onClose, onSelectAnother, allB
                     ? 'bg-amber-100 text-amber-800'
                     : 'bg-emerald-100 text-emerald-800'
                 }`}>
-                  {balita.statusTBU} (Z: {balita.zScoreTBU > 0 ? `+${balita.zScoreTBU}` : balita.zScoreTBU} SD)
+                  Stunting: {balita.statusTBU}
+                </span>
+                <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800">
+                  Status Gizi: {getStatusGiziBalita(balita)}
                 </span>
               </div>
               <p className="text-xs text-slate-500">
-                NIK: {balita.nik} • {balita.jk === 'L' ? 'Laki-laki' : 'Perempuan'} • Usia: {balita.usiaBulan} Bulan • Posyandu: {balita.posyandu}
+                NIK: {balita.nik} • {balita.jk === 'L' ? 'Laki-laki' : 'Perempuan'} • Usia: {balita.usiaBulan} Bulan • Posyandu: {balita.posyandu} • Terakhir Posyandu: {getFormattedTanggalPosyandu(balita.tanggalPengukuran).tglFormatted}
               </p>
             </div>
           </div>

@@ -214,6 +214,127 @@ export function determineIntervensiStatus(
   return 'Sesuai Target';
 }
 
+export type KategoriStatusGiziBalita = 
+  | 'Normal'
+  | 'Stanting'
+  | 'Gizi Buruk'
+  | 'Beresiko Lebih'
+  | 'Gizi Lebih'
+  | 'Obesitas';
+
+/**
+ * Menentukan Kategori Status Gizi Balita sesuai kriteria:
+ * Normal, Stanting, Gizi Buruk, Beresiko Lebih, Gizi Lebih, Obesitas.
+ * Dilihat dari status stunting (TB/U) & status gizi BB/TB
+ */
+export function getStatusGiziBalita(balita: {
+  statusTBU?: string;
+  statusBBTB?: string;
+  statusBBU?: string;
+  zScoreTBU?: number;
+  zScoreBBTB?: number;
+}): KategoriStatusGiziBalita {
+  // 1. Gizi Buruk (BB/TB < -3 SD)
+  if (
+    balita.statusBBTB === 'Gizi Buruk' ||
+    (balita.zScoreBBTB !== undefined && balita.zScoreBBTB < -3)
+  ) {
+    return 'Gizi Buruk';
+  }
+
+  // 2. Obesitas (BB/TB > +3 SD)
+  if (
+    balita.statusBBTB === 'Obesitas' ||
+    (balita.zScoreBBTB !== undefined && balita.zScoreBBTB > 3)
+  ) {
+    return 'Obesitas';
+  }
+
+  // 3. Gizi Lebih (BB/TB > +2 s/d +3 SD)
+  if (
+    balita.statusBBTB === 'Gizi Lebih' ||
+    (balita.zScoreBBTB !== undefined && balita.zScoreBBTB > 2)
+  ) {
+    return 'Gizi Lebih';
+  }
+
+  // 4. Beresiko Lebih (BB/TB > +1 s/d +2 SD)
+  if (
+    balita.statusBBTB === 'Berisiko Lebih' ||
+    balita.statusBBTB === 'Beresiko Lebih' ||
+    (balita.zScoreBBTB !== undefined && balita.zScoreBBTB > 1)
+  ) {
+    return 'Beresiko Lebih';
+  }
+
+  // 5. Stanting (dilihat dari status stunting: Sangat Pendek / Pendek atau TB/U < -2 SD)
+  if (
+    balita.statusTBU === 'Sangat Pendek' ||
+    balita.statusTBU === 'Pendek' ||
+    (balita.zScoreTBU !== undefined && balita.zScoreTBU < -2)
+  ) {
+    return 'Stanting';
+  }
+
+  // 6. Normal
+  return 'Normal';
+}
+
+/**
+ * Format tanggal terakhir posyandu dengan informasi lengkap Tanggal, Bulan, dan Tahun
+ */
+export function getFormattedTanggalPosyandu(tanggalStr?: string): {
+  tglFormatted: string;
+  bulanTahun: string;
+  shortDate: string;
+} {
+  if (!tanggalStr) {
+    return { tglFormatted: '-', bulanTahun: '-', shortDate: '-' };
+  }
+
+  try {
+    const parts = tanggalStr.split('-');
+    if (parts.length === 3) {
+      const year = parseInt(parts[0], 10);
+      const monthIdx = parseInt(parts[1], 10) - 1;
+      const day = parseInt(parts[2], 10);
+      const months = [
+        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+      ];
+      if (monthIdx >= 0 && monthIdx < 12 && !isNaN(day) && !isNaN(year)) {
+        const paddedDay = String(day).padStart(2, '0');
+        const monthName = months[monthIdx];
+        return {
+          tglFormatted: `${paddedDay} ${monthName} ${year}`,
+          bulanTahun: `${monthName} ${year}`,
+          shortDate: `${paddedDay}/${String(monthIdx + 1).padStart(2, '0')}/${year}`
+        };
+      }
+    }
+
+    const d = new Date(tanggalStr);
+    if (!isNaN(d.getTime())) {
+      const months = [
+        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+      ];
+      const day = String(d.getDate()).padStart(2, '0');
+      const monthName = months[d.getMonth()];
+      const year = d.getFullYear();
+      return {
+        tglFormatted: `${day} ${monthName} ${year}`,
+        bulanTahun: `${monthName} ${year}`,
+        shortDate: `${day}/${String(d.getMonth() + 1).padStart(2, '0')}/${year}`
+      };
+    }
+  } catch {
+    // fallback
+  }
+
+  return { tglFormatted: tanggalStr, bulanTahun: tanggalStr, shortDate: tanggalStr };
+}
+
 /**
  * Dapatkan deret kurva pertumbuhan WHO standar untuk visualisasi (0 - 60 bulan)
  */

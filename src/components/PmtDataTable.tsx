@@ -16,8 +16,10 @@ import {
   Square,
   Printer,
   ChevronDown,
+  Calendar,
 } from 'lucide-react';
 import { exportDataToExcel, exportDataToCSV } from '../utils/excelHelper';
+import { getStatusGiziBalita, getFormattedTanggalPosyandu } from '../utils/nutritionStandards';
 
 interface PmtDataTableProps {
   data: BalitaPMT[];
@@ -82,9 +84,16 @@ export default function PmtDataTable({
         return false;
       }
 
-      // Status Gizi filter (BB/TB)
-      if (filterStatusGizi !== 'Semua' && item.statusBBTB !== filterStatusGizi) {
-        return false;
+      // Status Gizi filter (Normal, Stanting, Gizi Buruk, Beresiko Lebih, Gizi Lebih, Obesitas)
+      if (filterStatusGizi !== 'Semua') {
+        const itemStatusGizi = getStatusGiziBalita(item);
+        if (filterStatusGizi === 'Stanting' || filterStatusGizi === 'Stunting') {
+          if (itemStatusGizi !== 'Stanting') return false;
+        } else if (filterStatusGizi === 'Beresiko Lebih' || filterStatusGizi === 'Berisiko Lebih') {
+          if (itemStatusGizi !== 'Beresiko Lebih') return false;
+        } else if (itemStatusGizi.toLowerCase() !== filterStatusGizi.toLowerCase()) {
+          return false;
+        }
       }
 
       // JK filter
@@ -317,9 +326,9 @@ export default function PmtDataTable({
             >
               <option value="Semua">Semua Status Gizi</option>
               <option value="Normal">Normal</option>
-              <option value="Stunting">Stunting</option>
+              <option value="Stanting">Stanting</option>
               <option value="Gizi Buruk">Gizi Buruk</option>
-              <option value="Berisiko Lebih">Berisiko Lebih</option>
+              <option value="Beresiko Lebih">Beresiko Lebih</option>
               <option value="Gizi Lebih">Gizi Lebih</option>
               <option value="Obesitas">Obesitas</option>
             </select>
@@ -396,7 +405,7 @@ export default function PmtDataTable({
               <th className="px-3 py-3">TB / BB</th>
               <th className="px-3 py-3">Status Stunting (TB/U)</th>
               <th className="px-3 py-3">Status Gizi Balita</th>
-              <th className="px-3 py-3">BULAN</th>
+              <th className="px-3 py-3">Terakhir Posyandu</th>
               <th className="px-3 py-3">Kepatuhan</th>
               <th className="px-3 py-3 text-right">Aksi</th>
             </tr>
@@ -490,30 +499,61 @@ export default function PmtDataTable({
 
                     {/* Status Gizi Balita */}
                     <td className="px-3 py-3">
-                      <div className="flex items-center gap-1.5">
-                        <span
-                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold ${
-                            balita.statusBBTB === 'Gizi Buruk'
-                              ? 'bg-rose-100 text-rose-800'
-                              : balita.statusBBTB === 'Gizi Kurang'
-                              ? 'bg-amber-100 text-amber-800'
-                              : balita.statusBBTB === 'Gizi Baik'
-                              ? 'bg-emerald-100 text-emerald-800'
-                              : 'bg-blue-100 text-blue-800'
-                          }`}
-                        >
-                          {balita.statusBBTB || 'Gizi Baik'}
-                        </span>
-                      </div>
-                      <div className="text-[10px] text-slate-500 mt-0.5 font-mono">
-                        BB/U: <span className="font-semibold text-slate-700">{balita.statusBBU || 'Normal'}</span> ({balita.zScoreBBU > 0 ? `+${balita.zScoreBBU}` : balita.zScoreBBU} SD)
-                      </div>
+                      {(() => {
+                        const statusGizi = getStatusGiziBalita(balita);
+                        const badgeStyle =
+                          statusGizi === 'Gizi Buruk'
+                            ? 'bg-rose-100 text-rose-800 border-rose-200'
+                            : statusGizi === 'Stanting'
+                            ? 'bg-amber-100 text-amber-800 border-amber-200'
+                            : statusGizi === 'Beresiko Lebih'
+                            ? 'bg-yellow-100 text-yellow-800 border-yellow-200'
+                            : statusGizi === 'Gizi Lebih'
+                            ? 'bg-orange-100 text-orange-800 border-orange-200'
+                            : statusGizi === 'Obesitas'
+                            ? 'bg-red-100 text-red-800 border-red-200'
+                            : 'bg-emerald-100 text-emerald-800 border-emerald-200';
+
+                        return (
+                          <div>
+                            <div className="flex items-center gap-1.5">
+                              <span
+                                className={`inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-bold border ${badgeStyle}`}
+                              >
+                                {statusGizi}
+                              </span>
+                            </div>
+                            <div className="text-[10px] text-slate-500 mt-0.5 font-mono">
+                              BB/TB: <span className="font-semibold text-slate-700">{balita.statusBBTB || 'Gizi Baik'}</span> ({balita.zScoreBBTB > 0 ? `+${balita.zScoreBBTB}` : balita.zScoreBBTB} SD)
+                            </div>
+                          </div>
+                        );
+                      })()}
                     </td>
 
-                    {/* Bulan */}
+                    {/* Tanggal Terakhir Posyandu */}
                     <td className="px-3 py-3">
-                      <div className="font-semibold text-indigo-700">Bulan ke-{Math.max(1, Math.ceil(balita.hariPMT / 30))}</div>
-                      <div className="text-[11px] text-slate-400">Hari ke-{balita.hariPMT}</div>
+                      {(() => {
+                        const lastDateStr =
+                          (balita.riwayat && balita.riwayat.length > 0
+                            ? balita.riwayat[balita.riwayat.length - 1].tanggal
+                            : '') ||
+                          balita.tanggalPengukuran ||
+                          '';
+                        const tglInfo = getFormattedTanggalPosyandu(lastDateStr);
+
+                        return (
+                          <div>
+                            <div className="font-semibold text-slate-800 text-xs flex items-center gap-1.5">
+                              <Calendar className="h-3.5 w-3.5 text-emerald-600 shrink-0" />
+                              <span>{tglInfo.tglFormatted}</span>
+                            </div>
+                            <div className="text-[10px] text-slate-500 pl-5">
+                              Bulan: <span className="font-medium text-slate-700">{tglInfo.bulanTahun}</span>
+                            </div>
+                          </div>
+                        );
+                      })()}
                     </td>
 
                     {/* Kepatuhan */}

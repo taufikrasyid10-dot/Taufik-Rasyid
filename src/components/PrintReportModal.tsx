@@ -2,6 +2,7 @@ import React from 'react';
 import { BalitaPMT } from '../types';
 import { X, Printer, FileSpreadsheet, Download, FileCheck } from 'lucide-react';
 import { exportDataToExcel } from '../utils/excelHelper';
+import { getStatusGiziBalita, getFormattedTanggalPosyandu } from '../utils/nutritionStandards';
 
 interface PrintReportModalProps {
   isOpen: boolean;
@@ -212,33 +213,42 @@ export default function PrintReportModal({ isOpen, onClose, data }: PrintReportM
                   <th className="p-2 border-r border-slate-300 text-center">Z-Score TB/U</th>
                   <th className="p-2 border-r border-slate-300">Status Stunting</th>
                   <th className="p-2 border-r border-slate-300">Status Gizi Balita</th>
-                  <th className="p-2 text-center">BULAN</th>
+                  <th className="p-2 text-center">Terakhir Posyandu</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-200">
-                {data.map((item, idx) => (
-                  <tr key={item.id} className="leading-tight">
-                    <td className="p-2 text-center border-r border-slate-200 font-mono text-[11px]">{idx + 1}</td>
-                    <td className="p-2 border-r border-slate-200 font-medium">{item.namaBalita}</td>
-                    <td className="p-2 border-r border-slate-200 font-mono text-[10px]">{item.nik}</td>
-                    <td className="p-2 text-center border-r border-slate-200">{item.jk}</td>
-                    <td className="p-2 text-center border-r border-slate-200">{item.usiaBulan} bln</td>
-                    <td className="p-2 border-r border-slate-200">{item.posyandu}</td>
-                    <td className="p-2 text-center border-r border-slate-200 font-mono">{item.tinggiBadan}</td>
-                    <td className="p-2 text-center border-r border-slate-200 font-mono">{item.beratBadan}</td>
-                    <td className="p-2 text-center border-r border-slate-200 font-mono">
-                      {item.zScoreTBU > 0 ? `+${item.zScoreTBU}` : item.zScoreTBU}
-                    </td>
-                    <td className="p-2 border-r border-slate-200 font-semibold text-[11px]">
-                      {item.statusTBU}
-                    </td>
-                    <td className="p-2 border-r border-slate-200 text-[11px]">
-                      <span className="font-semibold text-slate-800">{item.statusBBTB || 'Gizi Baik'}</span>
-                      <span className="text-slate-500 block text-[10px]">BB/U: {item.statusBBU || 'Normal'}</span>
-                    </td>
-                    <td className="p-2 text-center font-mono">Bulan ke-{Math.max(1, Math.ceil(item.hariPMT / 30))}</td>
-                  </tr>
-                ))}
+                {data.map((item, idx) => {
+                  const lastDateStr = (item.riwayat && item.riwayat.length > 0 ? item.riwayat[item.riwayat.length - 1].tanggal : '') || item.tanggalPengukuran || '';
+                  const tglInfo = getFormattedTanggalPosyandu(lastDateStr);
+                  const statusGizi = getStatusGiziBalita(item);
+
+                  return (
+                    <tr key={item.id} className="leading-tight">
+                      <td className="p-2 text-center border-r border-slate-200 font-mono text-[11px]">{idx + 1}</td>
+                      <td className="p-2 border-r border-slate-200 font-medium">{item.namaBalita}</td>
+                      <td className="p-2 border-r border-slate-200 font-mono text-[10px]">{item.nik}</td>
+                      <td className="p-2 text-center border-r border-slate-200">{item.jk}</td>
+                      <td className="p-2 text-center border-r border-slate-200">{item.usiaBulan} bln</td>
+                      <td className="p-2 border-r border-slate-200">{item.posyandu}</td>
+                      <td className="p-2 text-center border-r border-slate-200 font-mono">{item.tinggiBadan}</td>
+                      <td className="p-2 text-center border-r border-slate-200 font-mono">{item.beratBadan}</td>
+                      <td className="p-2 text-center border-r border-slate-200 font-mono">
+                        {item.zScoreTBU > 0 ? `+${item.zScoreTBU}` : item.zScoreTBU}
+                      </td>
+                      <td className="p-2 border-r border-slate-200 font-semibold text-[11px]">
+                        {item.statusTBU}
+                      </td>
+                      <td className="p-2 border-r border-slate-200 text-[11px]">
+                        <span className="font-semibold text-slate-800">{statusGizi}</span>
+                        <span className="text-slate-500 block text-[10px]">BB/TB: {item.statusBBTB || 'Gizi Baik'}</span>
+                      </td>
+                      <td className="p-2 text-center font-mono text-[10px]">
+                        <div className="font-medium text-slate-800">{tglInfo.tglFormatted}</div>
+                        <div className="text-[9px] text-slate-400">{tglInfo.bulanTahun}</div>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

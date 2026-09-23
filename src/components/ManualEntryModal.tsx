@@ -9,6 +9,7 @@ import {
   calculateZScoreBBTB,
   getStatusBBTB,
   determineIntervensiStatus,
+  getStatusGiziBalita,
 } from '../utils/nutritionStandards';
 import { X, Save, Calculator, AlertCircle, Check } from 'lucide-react';
 
@@ -218,6 +219,24 @@ export default function ManualEntryModal({
                   <span className="block text-[10px] font-semibold text-slate-600 mt-0.5">{statusBBTB}</span>
                 </div>
               </div>
+              <div className="mt-3 pt-2.5 border-t border-emerald-200/60 flex items-center justify-between text-xs">
+                <span className="text-slate-600 font-medium">Status Gizi Balita (Kategori):</span>
+                <span className={`px-2.5 py-0.5 rounded-full font-bold text-xs ${
+                  getStatusGiziBalita({ statusTBU, statusBBTB, statusBBU, zScoreTBU, zScoreBBTB }) === 'Gizi Buruk'
+                    ? 'bg-rose-100 text-rose-800 border border-rose-200'
+                    : getStatusGiziBalita({ statusTBU, statusBBTB, statusBBU, zScoreTBU, zScoreBBTB }) === 'Stanting'
+                    ? 'bg-amber-100 text-amber-800 border border-amber-200'
+                    : getStatusGiziBalita({ statusTBU, statusBBTB, statusBBU, zScoreTBU, zScoreBBTB }) === 'Beresiko Lebih'
+                    ? 'bg-yellow-100 text-yellow-800 border border-yellow-200'
+                    : getStatusGiziBalita({ statusTBU, statusBBTB, statusBBU, zScoreTBU, zScoreBBTB }) === 'Gizi Lebih'
+                    ? 'bg-orange-100 text-orange-800 border border-orange-200'
+                    : getStatusGiziBalita({ statusTBU, statusBBTB, statusBBU, zScoreTBU, zScoreBBTB }) === 'Obesitas'
+                    ? 'bg-red-100 text-red-800 border border-red-200'
+                    : 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                }`}>
+                  {getStatusGiziBalita({ statusTBU, statusBBTB, statusBBU, zScoreTBU, zScoreBBTB })}
+                </span>
+              </div>
             </div>
 
             {/* Section 1: Identitas Balita */}
@@ -361,7 +380,7 @@ export default function ManualEntryModal({
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 <div>
                   <label className="block text-xs font-semibold text-slate-700 mb-1">
-                    Tanggal Pengukuran *
+                    Tanggal Terakhir Posyandu *
                   </label>
                   <input
                     type="date"

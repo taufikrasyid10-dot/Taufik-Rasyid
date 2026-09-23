@@ -9,6 +9,8 @@ import {
   calculateZScoreBBTB,
   getStatusBBTB,
   determineIntervensiStatus,
+  getStatusGiziBalita,
+  getFormattedTanggalPosyandu,
 } from './nutritionStandards';
 
 /**
@@ -172,8 +174,9 @@ export function exportDataToExcel(data: BalitaPMT[], filename = 'Cetakan_Evaluas
     'Status Stunting (TB/U)': item.statusTBU,
     'Z-Score BB/U': item.zScoreBBU,
     'Status Berat Badan (BB/U)': item.statusBBU,
+    'Status Gizi Balita': getStatusGiziBalita(item),
     'Status Gizi (BB/TB)': item.statusBBTB,
-    'BULAN': `Bulan ke-${Math.max(1, Math.ceil(item.hariPMT / 30))} (Hari ke-${item.hariPMT})`,
+    'Terakhir Posyandu': getFormattedTanggalPosyandu((item.riwayat && item.riwayat.length > 0 ? item.riwayat[item.riwayat.length - 1].tanggal : '') || item.tanggalPengukuran).tglFormatted,
     'Menu Makanan': item.menuPMT,
     'Kepatuhan Konsumsi': item.kepatuhan,
     'Status Intervensi': item.statusIntervensi,
@@ -263,7 +266,9 @@ export function exportDataToCSV(data: BalitaPMT[], filename = 'Data_Stunting') {
     'Tinggi Badan (cm)': item.tinggiBadan,
     'Z-Score TB/U': item.zScoreTBU,
     'Status Stunting': item.statusTBU,
-    'BULAN': Math.max(1, Math.ceil(item.hariPMT / 30)),
+    'Status Gizi Balita': getStatusGiziBalita(item),
+    'Status Gizi (BB/TB)': item.statusBBTB,
+    'Terakhir Posyandu': getFormattedTanggalPosyandu((item.riwayat && item.riwayat.length > 0 ? item.riwayat[item.riwayat.length - 1].tanggal : '') || item.tanggalPengukuran).tglFormatted,
     'Kepatuhan': item.kepatuhan,
     'Status Intervensi': item.statusIntervensi,
   }));
