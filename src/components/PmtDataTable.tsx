@@ -46,15 +46,44 @@ export default function PmtDataTable({
   const [filterStatus, setFilterStatus] = useState<string>(selectedStatus || 'Semua');
   const [filterStatusGizi, setFilterStatusGizi] = useState<string>('Semua');
   const [filterBulanPosyandu, setFilterBulanPosyandu] = useState<string>('Semua');
+  const [filterTahunPosyandu, setFilterTahunPosyandu] = useState<string>('Semua');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 8;
   const [isTablePrintMenuOpen, setIsTablePrintMenuOpen] = useState(false);
   const tablePrintMenuRef = useRef<HTMLDivElement>(null);
 
-  // List opsi bulan posyandu berdasarkan tahun data
-  const monthOptions = useMemo(() => {
-    const years = new Set<number>();
+  // Daftar 12 Bulan
+  const MONTHS_LIST = useMemo(
+    () => [
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
+      'Mei',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember',
+    ],
+    []
+  );
+
+  // List opsi tahun posyandu dari tahun 2026 sampai seterusnya
+  const yearOptions = useMemo(() => {
+    const startYear = 2026;
+    const currentYear = new Date().getFullYear();
+    // Mendukung tahun 2026 sampai seterusnya (minimal hingga 2035 atau lebih bila ada data)
+    const maxFutureYear = Math.max(startYear + 9, currentYear + 5, 2035);
+
+    const yearSet = new Set<number>();
+    for (let y = startYear; y <= maxFutureYear; y++) {
+      yearSet.add(y);
+    }
+
     data.forEach((item) => {
       const lastDateStr =
         (item.riwayat && item.riwayat.length > 0
@@ -64,29 +93,11 @@ export default function PmtDataTable({
         '';
       if (lastDateStr) {
         const y = parseInt(lastDateStr.split('-')[0], 10);
-        if (!isNaN(y)) years.add(y);
+        if (!isNaN(y)) yearSet.add(y);
       }
     });
 
-    if (years.size === 0) {
-      years.add(new Date().getFullYear());
-    }
-
-    const allMonths = [
-      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
-    ];
-
-    const options: string[] = [];
-    Array.from(years)
-      .sort((a, b) => b - a)
-      .forEach((year) => {
-        allMonths.forEach((month) => {
-          options.push(`${month} ${year}`);
-        });
-      });
-
-    return options;
+    return Array.from(yearSet).sort((a, b) => a - b);
   }, [data]);
 
   useEffect(() => {
@@ -133,7 +144,7 @@ export default function PmtDataTable({
         }
       }
 
-      // Bulan Posyandu filter
+      // Bulan Posyandu filter (Bulan terpisah)
       if (filterBulanPosyandu !== 'Semua') {
         const lastDateStr =
           (item.riwayat && item.riwayat.length > 0
@@ -143,8 +154,26 @@ export default function PmtDataTable({
           '';
         const info = getFormattedTanggalPosyandu(lastDateStr);
         if (
-          info.bulanTahun.toLowerCase() !== filterBulanPosyandu.toLowerCase() &&
+          !info.bulanTahun.toLowerCase().includes(filterBulanPosyandu.toLowerCase()) &&
           !info.tglFormatted.toLowerCase().includes(filterBulanPosyandu.toLowerCase())
+        ) {
+          return false;
+        }
+      }
+
+      // Tahun Posyandu filter (Tahun terpisah, 2026 sampai seterusnya)
+      if (filterTahunPosyandu !== 'Semua') {
+        const lastDateStr =
+          (item.riwayat && item.riwayat.length > 0
+            ? item.riwayat[item.riwayat.length - 1].tanggal
+            : '') ||
+          item.tanggalPengukuran ||
+          '';
+        const info = getFormattedTanggalPosyandu(lastDateStr);
+        if (
+          !info.bulanTahun.includes(filterTahunPosyandu) &&
+          !info.tglFormatted.includes(filterTahunPosyandu) &&
+          !lastDateStr.startsWith(filterTahunPosyandu)
         ) {
           return false;
         }
@@ -163,7 +192,7 @@ export default function PmtDataTable({
 
       return true;
     });
-  }, [data, selectedPosyandu, filterStatus, filterStatusGizi, filterBulanPosyandu, searchTerm]);
+  }, [data, selectedPosyandu, filterStatus, filterStatusGizi, filterBulanPosyandu, filterTahunPosyandu, searchTerm]);
 
   // Pagination
   const totalPages = Math.ceil(filteredData.length / pageSize) || 1;
@@ -325,7 +354,7 @@ export default function PmtDataTable({
         </div>
 
         {/* Filter Bar */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2.5 pt-1">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2.5 pt-1">
           {/* Search Box */}
           <div className="relative">
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
@@ -392,12 +421,32 @@ export default function PmtDataTable({
                 setFilterBulanPosyandu(e.target.value);
                 setCurrentPage(1);
               }}
-              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
+              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 font-medium"
             >
-              <option value="Semua">Semua Bulan Posyandu</option>
-              {monthOptions.map((m) => (
+              <option value="Semua">Semua Bulan</option>
+              {MONTHS_LIST.map((m) => (
                 <option key={m} value={m}>
-                  {m}
+                  Bulan {m}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Tahun Posyandu Filter */}
+          <div className="flex items-center gap-2">
+            <select
+              aria-label="Filter Tahun Posyandu"
+              value={filterTahunPosyandu}
+              onChange={(e) => {
+                setFilterTahunPosyandu(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 font-medium"
+            >
+              <option value="Semua">Semua Tahun</option>
+              {yearOptions.map((year) => (
+                <option key={year} value={String(year)}>
+                  Tahun {year}
                 </option>
               ))}
             </select>
