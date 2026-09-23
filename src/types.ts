@@ -64,3 +64,15 @@ export interface UploadSummary {
   data: BalitaPMT[];
   validationList: UploadRowValidation[];
 }
+
+export type UserRole = 'Bidan Desa' | 'Kader Posyandu' | 'Petugas Gizi' | 'Admin KPM';
+
+export interface UserAccount {
+  id: string;
+  username: string;
+  namaLengkap: string;
+  role: UserRole;
+  posyandu: string;
+  desa: string;
+  puskesmas: string;
+}

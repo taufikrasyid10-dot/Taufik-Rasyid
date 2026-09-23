@@ -45,12 +45,49 @@ export default function PmtDataTable({
   const [searchTerm, setSearchTerm] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>(selectedStatus || 'Semua');
   const [filterStatusGizi, setFilterStatusGizi] = useState<string>('Semua');
-  const [filterJk, setFilterJk] = useState<string>('Semua');
+  const [filterBulanPosyandu, setFilterBulanPosyandu] = useState<string>('Semua');
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 8;
   const [isTablePrintMenuOpen, setIsTablePrintMenuOpen] = useState(false);
   const tablePrintMenuRef = useRef<HTMLDivElement>(null);
+
+  // List opsi bulan posyandu berdasarkan tahun data
+  const monthOptions = useMemo(() => {
+    const years = new Set<number>();
+    data.forEach((item) => {
+      const lastDateStr =
+        (item.riwayat && item.riwayat.length > 0
+          ? item.riwayat[item.riwayat.length - 1].tanggal
+          : '') ||
+        item.tanggalPengukuran ||
+        '';
+      if (lastDateStr) {
+        const y = parseInt(lastDateStr.split('-')[0], 10);
+        if (!isNaN(y)) years.add(y);
+      }
+    });
+
+    if (years.size === 0) {
+      years.add(new Date().getFullYear());
+    }
+
+    const allMonths = [
+      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
+
+    const options: string[] = [];
+    Array.from(years)
+      .sort((a, b) => b - a)
+      .forEach((year) => {
+        allMonths.forEach((month) => {
+          options.push(`${month} ${year}`);
+        });
+      });
+
+    return options;
+  }, [data]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -96,9 +133,21 @@ export default function PmtDataTable({
         }
       }
 
-      // JK filter
-      if (filterJk !== 'Semua' && item.jk !== filterJk) {
-        return false;
+      // Bulan Posyandu filter
+      if (filterBulanPosyandu !== 'Semua') {
+        const lastDateStr =
+          (item.riwayat && item.riwayat.length > 0
+            ? item.riwayat[item.riwayat.length - 1].tanggal
+            : '') ||
+          item.tanggalPengukuran ||
+          '';
+        const info = getFormattedTanggalPosyandu(lastDateStr);
+        if (
+          info.bulanTahun.toLowerCase() !== filterBulanPosyandu.toLowerCase() &&
+          !info.tglFormatted.toLowerCase().includes(filterBulanPosyandu.toLowerCase())
+        ) {
+          return false;
+        }
       }
 
       // Search text
@@ -114,7 +163,7 @@ export default function PmtDataTable({
 
       return true;
     });
-  }, [data, selectedPosyandu, filterStatus, filterStatusGizi, filterJk, searchTerm]);
+  }, [data, selectedPosyandu, filterStatus, filterStatusGizi, filterBulanPosyandu, searchTerm]);
 
   // Pagination
   const totalPages = Math.ceil(filteredData.length / pageSize) || 1;
@@ -334,20 +383,23 @@ export default function PmtDataTable({
             </select>
           </div>
 
-          {/* Jenis Kelamin Filter */}
+          {/* Bulan Posyandu Filter */}
           <div className="flex items-center gap-2">
             <select
-              aria-label="Filter Jenis Kelamin"
-              value={filterJk}
+              aria-label="Filter Bulan Posyandu"
+              value={filterBulanPosyandu}
               onChange={(e) => {
-                setFilterJk(e.target.value);
+                setFilterBulanPosyandu(e.target.value);
                 setCurrentPage(1);
               }}
               className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-700 focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500"
             >
-              <option value="Semua">Semua Jenis Kelamin</option>
-              <option value="L">Laki-laki (L)</option>
-              <option value="P">Perempuan (P)</option>
+              <option value="Semua">Semua Bulan Posyandu</option>
+              {monthOptions.map((m) => (
+                <option key={m} value={m}>
+                  {m}
+                </option>
+              ))}
             </select>
           </div>
         </div>

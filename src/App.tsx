@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { BalitaPMT } from './types';
+import { BalitaPMT, UserAccount } from './types';
 import { INITIAL_PMT_DATA } from './data/samplePmtData';
 import Navbar from './components/Navbar';
 import StatisticsOverview from './components/StatisticsOverview';
@@ -8,12 +8,17 @@ import UploadModal from './components/UploadModal';
 import ManualEntryModal from './components/ManualEntryModal';
 import GrowthCurvePlot from './components/GrowthCurvePlot';
 import PrintReportModal from './components/PrintReportModal';
+import LoginView from './components/LoginView';
+import { getCurrentUser, setCurrentUser } from './utils/authData';
 import { CheckCircle2, ShieldCheck, FileSpreadsheet, Upload, AlertCircle, PlusCircle, Printer } from 'lucide-react';
 import { downloadExcelTemplate, exportDataToExcel } from './utils/excelHelper';
 
 const STORAGE_KEY_BALITA = 'pmt_stanting_balita_data_v7';
 
 export default function App() {
+  // User Authentication State
+  const [currentUser, setCurUser] = useState<UserAccount | null>(() => getCurrentUser());
+
   // Balita Antropometri Data (3 Balita Sasaran: ARSYAD, MOHAMMAD ALFA RISKI, NURHAFIZAH)
   const [data, setData] = useState<BalitaPMT[]>(() => {
     try {
@@ -76,6 +81,18 @@ export default function App() {
 
   const totalStunting = data.filter(d => d.statusTBU === 'Sangat Pendek' || d.statusTBU === 'Pendek').length;
 
+  if (!currentUser) {
+    return (
+      <LoginView
+        onLoginSuccess={(user) => {
+          setCurUser(user);
+          setCurrentUser(user);
+          showToast(`Selamat datang, ${user.namaLengkap} (${user.role})!`);
+        }}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-slate-100/70 flex flex-col selection:bg-emerald-500 selection:text-white font-sans antialiased">
       
@@ -83,6 +100,14 @@ export default function App() {
       <Navbar
         totalBalita={data.length}
         totalStunting={totalStunting}
+        currentUser={currentUser}
+        onLogout={() => {
+          if (confirm(`Apakah Anda yakin ingin keluar dari akun ${currentUser.namaLengkap}?`)) {
+            setCurUser(null);
+            setCurrentUser(null);
+            showToast('Anda telah keluar dari sistem.');
+          }
+        }}
         onOpenUploadExcel={() => setIsUploadExcelOpen(true)}
         onOpenManualEntry={() => {
           setEditingBalita(null);
@@ -103,7 +128,7 @@ export default function App() {
               <div className="space-y-1.5 max-w-2xl">
                 <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-semibold text-emerald-300 backdrop-blur-md border border-emerald-400/30">
                   <ShieldCheck className="h-3.5 w-3.5" />
-                  Yuli Usman
+                  {currentUser.role} • {currentUser.posyandu}
                 </div>
                 <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
                   Evaluasi Balita Stunting

@@ -1,10 +1,13 @@
 import { useState, useRef, useEffect } from 'react';
-import { FileSpreadsheet, PlusCircle, Upload, Printer, RefreshCw, Activity, ShieldCheck, BarChart3, ChevronDown } from 'lucide-react';
+import { FileSpreadsheet, PlusCircle, Upload, Printer, RefreshCw, Activity, ShieldCheck, BarChart3, ChevronDown, LogOut } from 'lucide-react';
 import { downloadExcelTemplate } from '../utils/excelHelper';
+import { UserAccount } from '../types';
 
 interface NavbarProps {
   totalBalita: number;
   totalStunting: number;
+  currentUser?: UserAccount | null;
+  onLogout?: () => void;
   onOpenUploadExcel: () => void;
   onOpenManualEntry: () => void;
   onOpenPrintReport: () => void;
@@ -15,6 +18,8 @@ interface NavbarProps {
 export default function Navbar({
   totalBalita,
   totalStunting,
+  currentUser,
+  onLogout,
   onOpenUploadExcel,
   onOpenManualEntry,
   onOpenPrintReport,
@@ -175,6 +180,36 @@ export default function Navbar({
             >
               <RefreshCw className="h-3.5 w-3.5" />
             </button>
+
+            {currentUser && (
+              <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
+                <div className="flex items-center gap-2">
+                  <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-gradient-to-tr from-emerald-600 to-teal-600 text-white font-bold text-xs shadow-2xs">
+                    {currentUser.role === 'Bidan Desa' ? 'BD' : currentUser.role === 'Kader Posyandu' ? 'KP' : currentUser.role === 'Petugas Gizi' ? 'GZ' : 'AD'}
+                  </div>
+                  <div className="hidden xl:block text-left">
+                    <div className="text-xs font-bold text-slate-800 leading-tight truncate max-w-[130px]" title={currentUser.namaLengkap}>
+                      {currentUser.namaLengkap}
+                    </div>
+                    <div className="text-[10px] text-emerald-700 font-semibold leading-tight">
+                      {currentUser.role}
+                    </div>
+                  </div>
+                </div>
+
+                {onLogout && (
+                  <button
+                    type="button"
+                    onClick={onLogout}
+                    title="Keluar dari sistem"
+                    className="inline-flex items-center gap-1 rounded-lg border border-rose-200 bg-rose-50 px-2.5 py-1.5 text-xs font-bold text-rose-700 hover:bg-rose-100 hover:border-rose-300 transition"
+                  >
+                    <LogOut className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">Keluar</span>
+                  </button>
+                )}
+              </div>
+            )}
           </div>
 
         </div>
