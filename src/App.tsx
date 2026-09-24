@@ -11,8 +11,7 @@ import PrintReportModal from './components/PrintReportModal';
 import LoginView from './components/LoginView';
 import UserSettingsModal from './components/UserSettingsModal';
 import { getCurrentUser, setCurrentUser } from './utils/authData';
-import { CheckCircle2, ShieldCheck, FileSpreadsheet, Upload, AlertCircle, PlusCircle, Printer } from 'lucide-react';
-import { downloadExcelTemplate } from './utils/excelHelper';
+import { CheckCircle2, ShieldCheck, AlertCircle } from 'lucide-react';
 
 const STORAGE_KEY_BALITA = 'pmt_stanting_balita_data_v7';
 
@@ -121,58 +120,17 @@ export default function App() {
           
           {/* Banner Antropometri */}
           <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-emerald-800 via-teal-800 to-slate-900 p-6 text-white shadow-md print:hidden">
-            <div className="relative z-10 flex flex-col md:flex-row justify-between md:items-center gap-4">
-              <div className="space-y-1.5 max-w-2xl">
-                <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-semibold text-emerald-300 backdrop-blur-md border border-emerald-400/30">
-                  <ShieldCheck className="h-3.5 w-3.5" />
-                  {currentUser.role} • {currentUser.posyandu}
-                </div>
-                <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
-                  Evaluasi Balita Stunting
-                </h1>
-                <p className="text-xs sm:text-sm text-emerald-100/85 leading-relaxed">
-                  Pencatatan data sasaran balita stunting, perhitungan otomatis Z-Score TB/U &amp; BB/TB sesuai Permenkes No. 2/2020, kepatuhan menu harian, dan pemantauan kurva pertumbuhan WHO.
-                </p>
+            <div className="relative z-10 space-y-2 max-w-3xl">
+              <div className="inline-flex items-center gap-1.5 rounded-full bg-emerald-500/20 px-3 py-1 text-xs font-semibold text-emerald-300 backdrop-blur-md border border-emerald-400/30">
+                <ShieldCheck className="h-3.5 w-3.5" />
+                {currentUser.role} • {currentUser.posyandu}
               </div>
-
-              <div className="flex flex-wrap items-center gap-2.5">
-                <button
-                  type="button"
-                  onClick={() => setIsUploadExcelOpen(true)}
-                  className="inline-flex items-center gap-2 rounded-xl bg-white px-4 py-2 text-xs font-bold text-emerald-950 shadow-sm transition hover:bg-emerald-50 active:scale-95"
-                >
-                  <Upload className="h-4 w-4 text-emerald-700" />
-                  Upload Excel/CSV
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIsPrintReportOpen(true)}
-                  className="inline-flex items-center gap-1.5 rounded-xl border border-white/30 bg-white/15 px-3.5 py-2 text-xs font-semibold text-white backdrop-blur-md transition hover:bg-white/25 shadow-xs active:scale-95"
-                  title="Cetak Laporan: Pilihan Format Excel (.xlsx) atau Dokumen PDF"
-                >
-                  <Printer className="h-4 w-4 text-emerald-300" />
-                  <span>Cetak Laporan (Excel / PDF)</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={downloadExcelTemplate}
-                  className="inline-flex items-center gap-1.5 rounded-xl border border-white/25 bg-white/10 px-3 py-2 text-xs font-medium text-white backdrop-blur-md transition hover:bg-white/20"
-                >
-                  <FileSpreadsheet className="h-4 w-4" />
-                  Format Excel
-                </button>
-                <button
-                  type="button"
-                  onClick={() => {
-                    setEditingBalita(null);
-                    setIsManualEntryOpen(true);
-                  }}
-                  className="inline-flex items-center gap-1.5 rounded-xl border border-white/25 bg-white/10 px-3 py-2 text-xs font-medium text-white backdrop-blur-md transition hover:bg-white/20"
-                >
-                  <PlusCircle className="h-4 w-4" />
-                  Input Balita
-                </button>
-              </div>
+              <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight">
+                Evaluasi Balita Stunting
+              </h1>
+              <p className="text-xs sm:text-sm text-emerald-100/85 leading-relaxed">
+                Pencatatan data sasaran balita stunting, perhitungan otomatis Z-Score TB/U &amp; BB/TB sesuai Permenkes No. 2/2020, kepatuhan menu harian, dan pemantauan kurva pertumbuhan WHO.
+              </p>
             </div>
           </div>
 
@@ -202,6 +160,7 @@ export default function App() {
               setIsManualEntryOpen(true);
             }}
             onOpenPrintReport={() => setIsPrintReportOpen(true)}
+            onOpenUploadExcel={() => setIsUploadExcelOpen(true)}
             selectedPosyandu={selectedPosyandu}
             selectedStatus={selectedStatus}
           />

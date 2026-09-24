@@ -17,6 +17,7 @@ import {
   Printer,
   ChevronDown,
   Calendar,
+  Upload,
 } from 'lucide-react';
 import { exportDataToExcel, exportDataToCSV } from '../utils/excelHelper';
 import { getStatusGiziBalita, getFormattedTanggalPosyandu } from '../utils/nutritionStandards';
@@ -28,6 +29,7 @@ interface PmtDataTableProps {
   onDeleteBalita: (id: string) => void;
   onAddBalita: () => void;
   onOpenPrintReport?: () => void;
+  onOpenUploadExcel?: () => void;
   selectedPosyandu: string;
   selectedStatus: string;
 }
@@ -39,6 +41,7 @@ export default function PmtDataTable({
   onDeleteBalita,
   onAddBalita,
   onOpenPrintReport,
+  onOpenUploadExcel,
   selectedPosyandu,
   selectedStatus,
 }: PmtDataTableProps) {
@@ -253,7 +256,20 @@ export default function PmtDataTable({
           </div>
 
           {/* Action Tools */}
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
+            {onOpenUploadExcel && (
+              <button
+                type="button"
+                id="btn-table-upload-excel"
+                onClick={onOpenUploadExcel}
+                className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-600 bg-emerald-600 px-3 py-2 text-xs font-semibold text-white shadow-xs hover:bg-emerald-700 active:scale-95 transition cursor-pointer"
+                title="Unggah Data Balita dari File Excel / CSV"
+              >
+                <Upload className="h-4 w-4" />
+                <span>Upload Excel/CSV</span>
+              </button>
+            )}
+
             {/* Tombol Cetak Laporan (Gabungan Pilihan Excel / PDF / CSV) */}
             <div className="relative" ref={tablePrintMenuRef}>
               <div className="inline-flex rounded-lg shadow-2xs">
