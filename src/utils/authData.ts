@@ -137,3 +137,57 @@ export function setCurrentUser(user: UserAccount | null) {
     console.error('Failed to set current user:', err);
   }
 }
+
+export function updateUserProfile(
+  userId: string,
+  updates: Partial<Omit<UserAccount, 'id' | 'username'>>
+): { success: boolean; user?: UserAccount; error?: string } {
+  try {
+    const users = getStoredUsers();
+    const index = users.findIndex((u) => u.id === userId);
+    if (index === -1) {
+      return { success: false, error: 'Pengguna tidak ditemukan' };
+    }
+    const updatedUser = {
+      ...users[index],
+      ...updates,
+    };
+    users[index] = updatedUser;
+    localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
+
+    const { password: _, ...userSafe } = updatedUser;
+    setCurrentUser(userSafe);
+    return { success: true, user: userSafe };
+  } catch (err) {
+    return { success: false, error: 'Gagal memperbarui profil pengguna' };
+  }
+}
+
+export function changeUserPassword(
+  userId: string,
+  oldPass: string,
+  newPass: string
+): { success: boolean; error?: string } {
+  try {
+    const users = getStoredUsers();
+    const index = users.findIndex((u) => u.id === userId);
+    if (index === -1) {
+      return { success: false, error: 'Pengguna tidak ditemukan' };
+    }
+
+    if (users[index].password !== oldPass.trim()) {
+      return { success: false, error: 'Kata sandi lama tidak sesuai' };
+    }
+
+    if (!newPass || newPass.trim().length < 3) {
+      return { success: false, error: 'Kata sandi baru minimal 3 karakter' };
+    }
+
+    users[index].password = newPass.trim();
+    localStorage.setItem(STORAGE_USERS_KEY, JSON.stringify(users));
+    return { success: true };
+  } catch (err) {
+    return { success: false, error: 'Gagal mengganti kata sandi' };
+  }
+}
+

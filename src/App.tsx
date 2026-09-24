@@ -9,6 +9,7 @@ import ManualEntryModal from './components/ManualEntryModal';
 import GrowthCurvePlot from './components/GrowthCurvePlot';
 import PrintReportModal from './components/PrintReportModal';
 import LoginView from './components/LoginView';
+import UserSettingsModal from './components/UserSettingsModal';
 import { getCurrentUser, setCurrentUser } from './utils/authData';
 import { CheckCircle2, ShieldCheck, FileSpreadsheet, Upload, AlertCircle, PlusCircle, Printer } from 'lucide-react';
 import { downloadExcelTemplate, exportDataToExcel } from './utils/excelHelper';
@@ -18,6 +19,8 @@ const STORAGE_KEY_BALITA = 'pmt_stanting_balita_data_v7';
 export default function App() {
   // User Authentication State
   const [currentUser, setCurUser] = useState<UserAccount | null>(() => getCurrentUser());
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
+  const [settingsModalTab, setSettingsModalTab] = useState<'pengaturan' | 'ubah_profil' | 'password'>('pengaturan');
 
   // Balita Antropometri Data (3 Balita Sasaran: ARSYAD, MOHAMMAD ALFA RISKI, NURHAFIZAH)
   const [data, setData] = useState<BalitaPMT[]>(() => {
@@ -101,6 +104,10 @@ export default function App() {
         totalBalita={data.length}
         totalStunting={totalStunting}
         currentUser={currentUser}
+        onOpenSettings={(tab) => {
+          setSettingsModalTab(tab);
+          setIsSettingsModalOpen(true);
+        }}
         onLogout={() => {
           if (confirm(`Apakah Anda yakin ingin keluar dari akun ${currentUser.namaLengkap}?`)) {
             setCurUser(null);
@@ -292,6 +299,28 @@ export default function App() {
         onClose={() => setIsPrintReportOpen(false)}
         data={data}
       />
+
+      {/* User Settings & Account Modal */}
+      {currentUser && (
+        <UserSettingsModal
+          isOpen={isSettingsModalOpen}
+          initialTab={settingsModalTab}
+          currentUser={currentUser}
+          onClose={() => setIsSettingsModalOpen(false)}
+          onUpdateUser={(updatedUser) => {
+            setCurUser(updatedUser);
+            showToast('Profil pengguna berhasil diperbarui.');
+          }}
+          onLogout={() => {
+            if (confirm(`Apakah Anda yakin ingin keluar dari akun ${currentUser.namaLengkap}?`)) {
+              setIsSettingsModalOpen(false);
+              setCurUser(null);
+              setCurrentUser(null);
+              showToast('Anda telah keluar dari sistem.');
+            }
+          }}
+        />
+      )}
 
     </div>
   );
