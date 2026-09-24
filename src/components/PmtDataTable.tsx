@@ -404,7 +404,7 @@ export default function PmtDataTable({
             >
               <option value="Semua">Semua Status Gizi</option>
               <option value="Normal">Normal</option>
-              <option value="Stanting">Stanting</option>
+              <option value="Stunting">Stunting</option>
               <option value="Gizi Buruk">Gizi Buruk</option>
               <option value="Beresiko Lebih">Beresiko Lebih</option>
               <option value="Gizi Lebih">Gizi Lebih</option>
@@ -605,7 +605,7 @@ export default function PmtDataTable({
                         const badgeStyle =
                           statusGizi === 'Gizi Buruk'
                             ? 'bg-rose-100 text-rose-800 border-rose-200'
-                            : statusGizi === 'Stanting'
+                            : statusGizi === 'Stunting'
                             ? 'bg-amber-100 text-amber-800 border-amber-200'
                             : statusGizi === 'Beresiko Lebih'
                             ? 'bg-yellow-100 text-yellow-800 border-yellow-200'

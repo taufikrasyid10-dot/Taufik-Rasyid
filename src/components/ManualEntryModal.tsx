@@ -224,7 +224,7 @@ export default function ManualEntryModal({
                 <span className={`px-2.5 py-0.5 rounded-full font-bold text-xs ${
                   getStatusGiziBalita({ statusTBU, statusBBTB, statusBBU, zScoreTBU, zScoreBBTB }) === 'Gizi Buruk'
                     ? 'bg-rose-100 text-rose-800 border border-rose-200'
-                    : getStatusGiziBalita({ statusTBU, statusBBTB, statusBBU, zScoreTBU, zScoreBBTB }) === 'Stanting'
+                    : getStatusGiziBalita({ statusTBU, statusBBTB, statusBBU, zScoreTBU, zScoreBBTB }) === 'Stunting'
                     ? 'bg-amber-100 text-amber-800 border border-amber-200'
                     : getStatusGiziBalita({ statusTBU, statusBBTB, statusBBU, zScoreTBU, zScoreBBTB }) === 'Beresiko Lebih'
                     ? 'bg-yellow-100 text-yellow-800 border border-yellow-200'

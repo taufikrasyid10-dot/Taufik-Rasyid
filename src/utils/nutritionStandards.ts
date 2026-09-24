@@ -216,7 +216,7 @@ export function determineIntervensiStatus(
 
 export type KategoriStatusGiziBalita = 
   | 'Normal'
-  | 'Stanting'
+  | 'Stunting'
   | 'Gizi Buruk'
   | 'Beresiko Lebih'
   | 'Gizi Lebih'
@@ -224,7 +224,7 @@ export type KategoriStatusGiziBalita =
 
 /**
  * Menentukan Kategori Status Gizi Balita sesuai kriteria:
- * Normal, Stanting, Gizi Buruk, Beresiko Lebih, Gizi Lebih, Obesitas.
+ * Normal, Stunting, Gizi Buruk, Beresiko Lebih, Gizi Lebih, Obesitas.
  * Dilihat dari status stunting (TB/U) & status gizi BB/TB
  */
 export function getStatusGiziBalita(balita: {
@@ -267,13 +267,13 @@ export function getStatusGiziBalita(balita: {
     return 'Beresiko Lebih';
   }
 
-  // 5. Stanting (dilihat dari status stunting: Sangat Pendek / Pendek atau TB/U < -2 SD)
+  // 5. Stunting (dilihat dari status stunting: Sangat Pendek / Pendek atau TB/U < -2 SD)
   if (
     balita.statusTBU === 'Sangat Pendek' ||
     balita.statusTBU === 'Pendek' ||
     (balita.zScoreTBU !== undefined && balita.zScoreTBU < -2)
   ) {
-    return 'Stanting';
+    return 'Stunting';
   }
 
   // 6. Normal
