@@ -36,14 +36,38 @@ export default function PrintReportModal({ isOpen, onClose, data }: PrintReportM
   });
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-xs print:p-0 print:bg-white print:fixed print:inset-0">
-      {/* Dynamic Print Style for F4 / Folio Paper Size */}
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 p-4 backdrop-blur-xs print:static print:block print:inset-auto print:p-0 print:m-0 print:bg-transparent print:h-auto print:w-full">
+      {/* Dynamic Print Style for F4 / Folio Paper Size - Aligned strictly from the top */}
       <style>
         {`
           @media print {
             @page {
               size: ${paperOrientation === 'landscape' ? '330mm 215mm' : '215mm 330mm'};
-              margin: ${paperOrientation === 'landscape' ? '6mm 8mm 6mm 8mm' : '10mm 8mm 10mm 8mm'};
+              margin: ${paperOrientation === 'landscape' ? '5mm 8mm 5mm 8mm' : '8mm 8mm 8mm 8mm'};
+            }
+            html, body, #root {
+              margin: 0 !important;
+              padding: 0 !important;
+              height: auto !important;
+              min-height: 0 !important;
+              background-color: white !important;
+              display: block !important;
+            }
+            #printable-report-dialog {
+              position: static !important;
+              display: block !important;
+              margin: 0 !important;
+              padding: 0 !important;
+              top: 0 !important;
+              width: 100% !important;
+              max-width: 100% !important;
+              box-shadow: none !important;
+              border: none !important;
+            }
+            #printable-content-body {
+              margin: 0 !important;
+              padding: 0 !important;
+              display: block !important;
             }
           }
         `}
@@ -51,7 +75,7 @@ export default function PrintReportModal({ isOpen, onClose, data }: PrintReportM
 
       <div 
         id="printable-report-dialog"
-        className="relative flex max-h-[95vh] w-full max-w-5xl flex-col rounded-2xl bg-white shadow-2xl overflow-hidden border border-slate-200 print:border-none print:shadow-none print:max-h-none print:w-full"
+        className="relative flex max-h-[95vh] w-full max-w-5xl flex-col rounded-2xl bg-white shadow-2xl overflow-hidden border border-slate-200 print:static print:block print:border-none print:shadow-none print:max-h-none print:w-full print:m-0 print:p-0"
       >
         {/* Modal Bar (Hidden on Print) */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-slate-200 px-6 py-3.5 bg-slate-50 print:hidden">
@@ -103,7 +127,10 @@ export default function PrintReportModal({ isOpen, onClose, data }: PrintReportM
         </div>
 
         {/* Printable Document Area */}
-        <div className="overflow-y-auto p-6 sm:p-8 font-sans text-slate-900 space-y-6 print:p-2 print:overflow-visible">
+        <div 
+          id="printable-content-body"
+          className="overflow-y-auto p-6 sm:p-8 font-sans text-slate-900 space-y-6 print:p-0 print:m-0 print:space-y-3 print:overflow-visible"
+        >
           
           {/* Pilihan Cetak & Konfigurasi F4 (Hidden on Print) */}
           <div className="rounded-2xl border border-slate-200 bg-slate-50/90 p-4 print:hidden space-y-4">
