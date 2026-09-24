@@ -12,7 +12,7 @@ import LoginView from './components/LoginView';
 import UserSettingsModal from './components/UserSettingsModal';
 import { getCurrentUser, setCurrentUser } from './utils/authData';
 import { CheckCircle2, ShieldCheck, FileSpreadsheet, Upload, AlertCircle, PlusCircle, Printer } from 'lucide-react';
-import { downloadExcelTemplate, exportDataToExcel } from './utils/excelHelper';
+import { downloadExcelTemplate } from './utils/excelHelper';
 
 const STORAGE_KEY_BALITA = 'pmt_stanting_balita_data_v7';
 
@@ -101,8 +101,6 @@ export default function App() {
       
       {/* Top Navbar */}
       <Navbar
-        totalBalita={data.length}
-        totalStunting={totalStunting}
         currentUser={currentUser}
         onOpenSettings={(tab) => {
           setSettingsModalTab(tab);
@@ -115,14 +113,6 @@ export default function App() {
             showToast('Anda telah keluar dari sistem.');
           }
         }}
-        onOpenUploadExcel={() => setIsUploadExcelOpen(true)}
-        onOpenManualEntry={() => {
-          setEditingBalita(null);
-          setIsManualEntryOpen(true);
-        }}
-        onOpenPrintReport={() => setIsPrintReportOpen(true)}
-        onExportExcel={() => exportDataToExcel(data, 'Cetakan_Evaluasi_Stunting')}
-        onResetData={handleResetData}
       />
 
       {/* Main Content Area */}
