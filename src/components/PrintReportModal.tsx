@@ -253,7 +253,7 @@ export default function PrintReportModal({ isOpen, onClose, data }: PrintReportM
               Program Intervensi Pencegahan & Percepatan Penurunan Stunting Balita
             </h2>
             <p className="text-xs text-slate-600 mt-1">
-              Puskesmas Pengampu: <span className="font-semibold text-slate-900">{data[0]?.puskesmas || 'Puskesmas Wilayah'}</span> • Ukuran Dokumen: <span className="font-semibold text-slate-800">Kertas F4 / Folio</span> • Periode Evaluasi: {currentDate}
+              Puskesmas Pengampu: <span className="font-semibold text-slate-900">{data[0]?.puskesmas || 'Puskesmas Wilayah'}</span> • Periode Evaluasi: {currentDate}
             </p>
           </div>
 
