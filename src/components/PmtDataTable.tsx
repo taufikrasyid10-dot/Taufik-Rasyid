@@ -149,13 +149,13 @@ export default function PmtDataTable({
 
       // Bulan Posyandu filter (Bulan terpisah)
       if (filterBulanPosyandu !== 'Semua') {
-        const lastDateStr =
+        const targetDateStr =
+          item.tanggalPengukuran ||
           (item.riwayat && item.riwayat.length > 0
             ? item.riwayat[item.riwayat.length - 1].tanggal
             : '') ||
-          item.tanggalPengukuran ||
           '';
-        const info = getFormattedTanggalPosyandu(lastDateStr);
+        const info = getFormattedTanggalPosyandu(targetDateStr);
         if (
           !info.bulanTahun.toLowerCase().includes(filterBulanPosyandu.toLowerCase()) &&
           !info.tglFormatted.toLowerCase().includes(filterBulanPosyandu.toLowerCase())
@@ -166,17 +166,17 @@ export default function PmtDataTable({
 
       // Tahun Posyandu filter (Tahun terpisah, 2026 sampai seterusnya)
       if (filterTahunPosyandu !== 'Semua') {
-        const lastDateStr =
+        const targetDateStr =
+          item.tanggalPengukuran ||
           (item.riwayat && item.riwayat.length > 0
             ? item.riwayat[item.riwayat.length - 1].tanggal
             : '') ||
-          item.tanggalPengukuran ||
           '';
-        const info = getFormattedTanggalPosyandu(lastDateStr);
+        const info = getFormattedTanggalPosyandu(targetDateStr);
         if (
           !info.bulanTahun.includes(filterTahunPosyandu) &&
           !info.tglFormatted.includes(filterTahunPosyandu) &&
-          !lastDateStr.startsWith(filterTahunPosyandu)
+          !targetDateStr.startsWith(filterTahunPosyandu)
         ) {
           return false;
         }
@@ -651,13 +651,13 @@ export default function PmtDataTable({
                     {/* Tanggal Terakhir Posyandu */}
                     <td className="px-3 py-3">
                       {(() => {
-                        const lastDateStr =
+                        const targetDateStr =
+                          balita.tanggalPengukuran ||
                           (balita.riwayat && balita.riwayat.length > 0
                             ? balita.riwayat[balita.riwayat.length - 1].tanggal
                             : '') ||
-                          balita.tanggalPengukuran ||
                           '';
-                        const tglInfo = getFormattedTanggalPosyandu(lastDateStr);
+                        const tglInfo = getFormattedTanggalPosyandu(targetDateStr);
 
                         return (
                           <div>

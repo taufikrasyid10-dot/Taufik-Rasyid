@@ -49,7 +49,15 @@ export const TEMPLATE_COLUMNS = [
 /**
  * Unduh Template Excel Resmi (.xlsx)
  */
-export function downloadExcelTemplate() {
+export function downloadExcelTemplate(selectedBulan = 'Agustus', selectedTahun = '2026') {
+  const monthMap: Record<string, string> = {
+    januari: '01', februari: '02', maret: '03', april: '04',
+    mei: '05', juni: '06', juli: '07', agustus: '08',
+    september: '09', oktober: '10', november: '11', desember: '12',
+  };
+  const mNum = monthMap[selectedBulan.toLowerCase()] || '08';
+  const targetDate = `${selectedTahun}-${mNum}-01`;
+
   const exampleRows = [
     {
       'NIK': '7209042201230001',
@@ -60,7 +68,7 @@ export function downloadExcelTemplate() {
       'Posyandu': 'Posyandu Kajulangko',
       'Desa/Kelurahan': 'Kajulango',
       'Puskesmas': 'Puskesmas Ampana Tete',
-      'Tanggal Pengukuran (YYYY-MM-DD)': '2026-08-01',
+      'Tanggal Pengukuran (YYYY-MM-DD)': targetDate,
       'Berat Badan (kg)': 9.3,
       'Tinggi Badan (cm)': 80.5,
       'Lingkar Lengan LiLA (cm)': 12.5,
@@ -79,7 +87,7 @@ export function downloadExcelTemplate() {
       'Posyandu': 'Posyandu Kajulangko',
       'Desa/Kelurahan': 'Kajulango',
       'Puskesmas': 'Puskesmas Ampana Tete',
-      'Tanggal Pengukuran (YYYY-MM-DD)': '2026-08-01',
+      'Tanggal Pengukuran (YYYY-MM-DD)': targetDate,
       'Berat Badan (kg)': 8.4,
       'Tinggi Badan (cm)': 75.0,
       'Lingkar Lengan LiLA (cm)': 12.1,
@@ -98,7 +106,7 @@ export function downloadExcelTemplate() {
       'Posyandu': 'Posyandu Kajulangko',
       'Desa/Kelurahan': 'Kajulango',
       'Puskesmas': 'Puskesmas Ampana Tete',
-      'Tanggal Pengukuran (YYYY-MM-DD)': '2026-08-01',
+      'Tanggal Pengukuran (YYYY-MM-DD)': targetDate,
       'Berat Badan (kg)': 8.9,
       'Tinggi Badan (cm)': 79.5,
       'Lingkar Lengan LiLA (cm)': 12.4,
@@ -150,22 +158,24 @@ export function downloadExcelTemplate() {
   };
 
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Template_Stunting');
+  XLSX.utils.book_append_sheet(wb, ws, 'Data_Balita');
 
   // Add petunjuk sheet
   const guidelines = [
-    { 'Petunjuk Pengisian': '1. NIK balita disarankan 16 digit angka (opsional jika belum memiliki NIK).' },
-    { 'Petunjuk Pengisian': '2. Jenis Kelamin diisi L (Laki-laki) atau P (Perempuan).' },
-    { 'Petunjuk Pengisian': '3. Tanggal ditulis dengan format YYYY-MM-DD (contoh: 2024-05-12).' },
-    { 'Petunjuk Pengisian': '4. Berat Badan dalam kilogram (gunakan titik untuk desimal, contoh: 8.5).' },
-    { 'Petunjuk Pengisian': '5. Tinggi/Panjang Badan dalam sentimeter (contoh: 76.5).' },
-    { 'Petunjuk Pengisian': '6. Kepatuhan Konsumsi: Habis, 3/4 Porsi, 1/2 Porsi, < 1/2 Porsi, atau Tidak Dikonsumsi.' },
-    { 'Petunjuk Pengisian': '7. Sistem akan secara otomatis mengkalkulasi Usia (Bulan), Z-Score TB/U, Z-Score BB/U, dan Status Stunting.' }
+    { 'Petunjuk Pengisian': `PANDUAN FORMAT EXCEL PENIMBANGAN POSYANDU: ${selectedBulan.toUpperCase()} ${selectedTahun}` },
+    { 'Petunjuk Pengisian': '1. Anda dapat mengunggah file untuk balita yang sama di setiap bulan (Januari s/d Desember) untuk melihat grafik tumbuh kembang anak.' },
+    { 'Petunjuk Pengisian': '2. NIK balita disarankan 16 digit angka (opsional jika belum memiliki NIK).' },
+    { 'Petunjuk Pengisian': '3. Jenis Kelamin diisi L (Laki-laki) atau P (Perempuan).' },
+    { 'Petunjuk Pengisian': '4. Tanggal ditulis dengan format YYYY-MM-DD (contoh: 2024-05-12).' },
+    { 'Petunjuk Pengisian': '5. Berat Badan dalam kilogram (gunakan titik untuk desimal, contoh: 8.5).' },
+    { 'Petunjuk Pengisian': '6. Tinggi/Panjang Badan dalam sentimeter (contoh: 76.5).' },
+    { 'Petunjuk Pengisian': '7. Kepatuhan Konsumsi: Habis, 3/4 Porsi, 1/2 Porsi, < 1/2 Porsi, atau Tidak Dikonsumsi.' },
+    { 'Petunjuk Pengisian': '8. Sistem akan secara otomatis mengkalkulasi Usia (Bulan), Z-Score TB/U, Z-Score BB/U, dan Status Stunting.' }
   ];
   const wsGuide = XLSX.utils.json_to_sheet(guidelines);
   XLSX.utils.book_append_sheet(wb, wsGuide, 'Petunjuk_Pengisian');
 
-  XLSX.writeFile(wb, 'Template_Data_Stanting_Balita.xlsx');
+  XLSX.writeFile(wb, `Template_Rekap_Balita_${selectedBulan}_${selectedTahun}.xlsx`);
 }
 
 /**
@@ -337,7 +347,7 @@ export function exportDataToCSV(data: BalitaPMT[], filename = 'Data_Stunting') {
 /**
  * Parse dan validasi file upload (Excel atau CSV)
  */
-export async function parseUploadedFile(file: File): Promise<UploadSummary> {
+export async function parseUploadedFile(file: File, defaultTargetDate?: string): Promise<UploadSummary> {
   const arrayBuffer = await file.arrayBuffer();
   const workbook = XLSX.read(arrayBuffer, { type: 'array' });
 
@@ -402,7 +412,7 @@ export async function parseUploadedFile(file: File): Promise<UploadSummary> {
     }
 
     const tglLahir = mapped.tanggalLahir || '2024-01-01';
-    const tglUkur = mapped.tanggalPengukuran || new Date().toISOString().split('T')[0];
+    const tglUkur = defaultTargetDate || mapped.tanggalPengukuran || new Date().toISOString().split('T')[0];
     const usiaBulan = calculateAgeInMonths(tglLahir, tglUkur);
 
     const bb = mapped.beratBadan || 0;
@@ -505,6 +515,44 @@ export async function parseUploadedFile(file: File): Promise<UploadSummary> {
     invalidRows: rawRows.length - validData.length,
     data: validData,
     validationList,
+  };
+}
+
+/**
+ * Menghitung ulang metrik pertumbuhan balita untuk tanggal pengukuran / bulan target baru
+ */
+export function recalculateBalitaForDate(balita: BalitaPMT, targetDate: string): BalitaPMT {
+  const usiaBulan = calculateAgeInMonths(balita.tanggalLahir, targetDate);
+  const zScoreTBU = calculateZScoreTBU(usiaBulan, balita.tinggiBadan, balita.jk);
+  const statusTBU = getStatusTBU(zScoreTBU);
+  const zScoreBBU = calculateZScoreBBU(usiaBulan, balita.beratBadan, balita.jk);
+  const statusBBU = getStatusBBU(zScoreBBU);
+  const zScoreBBTB = calculateZScoreBBTB(balita.tinggiBadan, balita.beratBadan, balita.jk);
+  const statusBBTB = getStatusBBTB(zScoreBBTB);
+  const statusIntervensi = determineIntervensiStatus(statusTBU, balita.kepatuhan, balita.hariPMT || 1);
+
+  return {
+    ...balita,
+    tanggalPengukuran: targetDate,
+    usiaBulan,
+    zScoreTBU,
+    statusTBU,
+    zScoreBBU,
+    statusBBU,
+    zScoreBBTB,
+    statusBBTB,
+    statusIntervensi,
+    riwayat: [
+      {
+        id: `hist-${targetDate}-${balita.id || '0'}`,
+        tanggal: targetDate,
+        hariPMT: balita.hariPMT || 1,
+        tinggiBadan: balita.tinggiBadan,
+        beratBadan: balita.beratBadan,
+        kepatuhan: balita.kepatuhan,
+        catatan: balita.catatanKesehatan || 'Pengukuran Posyandu',
+      }
+    ]
   };
 }
 

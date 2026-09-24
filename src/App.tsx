@@ -11,6 +11,7 @@ import PrintReportModal from './components/PrintReportModal';
 import LoginView from './components/LoginView';
 import UserSettingsModal from './components/UserSettingsModal';
 import { getCurrentUser, setCurrentUser } from './utils/authData';
+import { getFormattedTanggalPosyandu } from './utils/nutritionStandards';
 import { CheckCircle2, ShieldCheck, AlertCircle } from 'lucide-react';
 
 const STORAGE_KEY_BALITA = 'pmt_stanting_balita_data_v7';
@@ -202,11 +203,69 @@ export default function App() {
             showToast(`Berhasil mengganti database dengan ${newData.length} data balita.`);
           } else {
             setData(prev => {
-              const existingNiks = new Set(prev.map(p => p.nik));
-              const filtered = newData.filter(n => !existingNiks.has(n.nik));
-              return [...filtered, ...prev];
+              const updated = [...prev];
+              let addedCount = 0;
+              let updatedCount = 0;
+
+              newData.forEach(newItem => {
+                const newItemInfo = getFormattedTanggalPosyandu(newItem.tanggalPengukuran);
+                const newMonthYear = newItemInfo.bulanTahun.toLowerCase().trim();
+
+                // Cari apakah balita dengan NIK yang sama sudah tercatat di bulan & tahun yang sama
+                const existingIdx = updated.findIndex(p => {
+                  const pMonthYear = getFormattedTanggalPosyandu(p.tanggalPengukuran).bulanTahun.toLowerCase().trim();
+                  return p.nik.trim() === newItem.nik.trim() && pMonthYear === newMonthYear;
+                });
+
+                if (existingIdx >= 0) {
+                  // Perbarui data penimbangan di bulan yang sama
+                  updated[existingIdx] = {
+                    ...updated[existingIdx],
+                    ...newItem,
+                    id: updated[existingIdx].id, // Pertahankan ID yang stabil
+                  };
+                  updatedCount++;
+                } else {
+                  // Tambahkan baris penimbangan baru untuk bulan ini (balita yang sama di bulan berbeda)
+                  updated.unshift(newItem);
+                  addedCount++;
+                }
+              });
+
+              // Sinkronisasi riwayat pengukuran lintas bulan untuk setiap balita (berdasarkan NIK)
+              // agar kurva pertumbuhan WHO menampilkan seluruh titik bulan secara berurutan
+              const historyMap = new Map<string, any[]>();
+              updated.forEach(item => {
+                const nikKey = item.nik.trim();
+                const list = historyMap.get(nikKey) || [];
+                const tgl = item.tanggalPengukuran;
+                if (!list.some(h => h.tanggal === tgl)) {
+                  list.push({
+                    id: `hist-${tgl}-${item.id}`,
+                    tanggal: tgl,
+                    hariPMT: item.hariPMT || 1,
+                    tinggiBadan: item.tinggiBadan,
+                    beratBadan: item.beratBadan,
+                    kepatuhan: item.kepatuhan,
+                    catatan: item.catatanKesehatan || `Pengukuran Posyandu ${getFormattedTanggalPosyandu(tgl).bulanTahun}`,
+                  });
+                }
+                historyMap.set(nikKey, list);
+              });
+
+              // Tetapkan riwayat yang tersinkronisasi dan terurut secara kronologis
+              return updated.map(item => {
+                const histories = [...(historyMap.get(item.nik.trim()) || item.riwayat || [])];
+                histories.sort((a, b) => new Date(a.tanggal).getTime() - new Date(b.tanggal).getTime());
+                return {
+                  ...item,
+                  riwayat: histories,
+                };
+              });
             });
-            showToast(`Berhasil menambahkan ${newData.length} data balita.`);
+
+            const firstInfo = newData.length > 0 ? getFormattedTanggalPosyandu(newData[0].tanggalPengukuran).bulanTahun : '';
+            showToast(`Berhasil memproses ${newData.length} data balita${firstInfo ? ` periode ${firstInfo}` : ''}.`);
           }
         }}
       />

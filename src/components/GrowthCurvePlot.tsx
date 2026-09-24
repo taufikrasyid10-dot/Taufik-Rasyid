@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { BalitaPMT } from '../types';
-import { getWHOGrowthCurveData, getStatusGiziBalita, getFormattedTanggalPosyandu } from '../utils/nutritionStandards';
+import { getWHOGrowthCurveData, getStatusGiziBalita, getFormattedTanggalPosyandu, calculateAgeInMonths } from '../utils/nutritionStandards';
 import { TrendingUp, X, CheckCircle, AlertTriangle, Calendar, User, Scale, Ruler, Award } from 'lucide-react';
 
 interface GrowthCurvePlotProps {
@@ -52,9 +52,9 @@ export default function GrowthCurvePlot({ balita, onClose, onSelectAnother, allB
   // Shaded area for Stunting Zone (< -2 SD to -3 SD)
   const stuntingZonePath = `${minus2SDPath} ` + whoCurve.slice().reverse().map(p => `L ${scaleX(p.age).toFixed(1)} ${scaleY(p.minus3SD).toFixed(1)}`).join(' ') + ' Z';
 
-  // Sort child measurement history
+  // Sort child measurement history chronologically by date
   const historyPoints = (balita.riwayat && balita.riwayat.length > 0)
-    ? [...balita.riwayat].sort((a, b) => a.hariPMT - b.hariPMT)
+    ? [...balita.riwayat].sort((a, b) => new Date(a.tanggal).getTime() - new Date(b.tanggal).getTime())
     : [
         {
           id: 'single',
@@ -67,11 +67,9 @@ export default function GrowthCurvePlot({ balita, onClose, onSelectAnother, allB
         }
       ];
 
-  // Calculate approximate age at each history point
-  const childPointsWithAge = historyPoints.map((h, i) => {
-    const daysFromLatest = (historyPoints[historyPoints.length - 1].hariPMT - h.hariPMT);
-    const monthsDiff = daysFromLatest / 30;
-    const estAge = Math.max(0, Number((balita.usiaBulan - monthsDiff).toFixed(1)));
+  // Calculate accurate age in months at each history point
+  const childPointsWithAge = historyPoints.map((h) => {
+    const estAge = calculateAgeInMonths(balita.tanggalLahir, h.tanggal);
     return {
       ...h,
       estAge,
