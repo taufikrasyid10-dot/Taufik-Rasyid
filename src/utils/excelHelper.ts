@@ -133,6 +133,22 @@ export function downloadExcelTemplate() {
     { wch: 30 }, // Catatan
   ];
 
+  // Konfigurasi Cetak Ukuran Kertas F4 / Folio (215 x 330 mm) Landscape
+  ws['!pageSetup'] = {
+    paperSize: 14, // 14 = Folio / F4 (8.5 x 13 inci)
+    orientation: 'landscape',
+    fitToWidth: 1,
+    fitToHeight: 0,
+  };
+  ws['!margins'] = {
+    left: 0.3,
+    right: 0.3,
+    top: 0.4,
+    bottom: 0.4,
+    header: 0.2,
+    footer: 0.2,
+  };
+
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'Template_Stunting');
 
@@ -212,6 +228,22 @@ export function exportDataToExcel(data: BalitaPMT[], filename = 'Cetakan_Evaluas
     { wch: 35 }, // Catatan Kesehatan
   ];
 
+  // Konfigurasi Cetak Halaman Kertas F4 / Folio (215 x 330 mm) Landscape
+  ws['!pageSetup'] = {
+    paperSize: 14, // 14 = Folio / F4 (8.5 x 13 inci / 215.9 x 330.2 mm)
+    orientation: 'landscape',
+    fitToWidth: 1,
+    fitToHeight: 0,
+  };
+  ws['!margins'] = {
+    left: 0.3,
+    right: 0.3,
+    top: 0.4,
+    bottom: 0.4,
+    header: 0.2,
+    footer: 0.2,
+  };
+
   const wb = XLSX.utils.book_new();
 
   // Sheet 1: Data Rekapitulasi Lengkap
@@ -241,6 +273,23 @@ export function exportDataToExcel(data: BalitaPMT[], filename = 'Cetakan_Evaluas
   ];
   const wsSummary = XLSX.utils.json_to_sheet(summaryRows);
   wsSummary['!cols'] = [{ wch: 38 }, { wch: 60 }];
+  
+  // Konfigurasi Cetak Halaman Kertas F4 / Folio untuk Lembar Ringkasan
+  wsSummary['!pageSetup'] = {
+    paperSize: 14, // 14 = Folio / F4
+    orientation: 'portrait',
+    fitToWidth: 1,
+    fitToHeight: 1,
+  };
+  wsSummary['!margins'] = {
+    left: 0.5,
+    right: 0.5,
+    top: 0.5,
+    bottom: 0.5,
+    header: 0.2,
+    footer: 0.2,
+  };
+
   XLSX.utils.book_append_sheet(wb, wsSummary, 'Ringkasan_Laporan');
 
   XLSX.writeFile(wb, `${filename}_${new Date().toISOString().split('T')[0]}.xlsx`);

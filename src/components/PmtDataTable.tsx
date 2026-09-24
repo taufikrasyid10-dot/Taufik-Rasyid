@@ -132,11 +132,11 @@ export default function PmtDataTable({
         return false;
       }
 
-      // Status Gizi filter (Normal, Stanting, Gizi Buruk, Beresiko Lebih, Gizi Lebih, Obesitas)
+      // Status Gizi filter (Normal, Stunting, Gizi Buruk, Beresiko Lebih, Gizi Lebih, Obesitas)
       if (filterStatusGizi !== 'Semua') {
         const itemStatusGizi = getStatusGiziBalita(item);
         if (filterStatusGizi === 'Stanting' || filterStatusGizi === 'Stunting') {
-          if (itemStatusGizi !== 'Stanting') return false;
+          if (itemStatusGizi !== 'Stunting') return false;
         } else if (filterStatusGizi === 'Beresiko Lebih' || filterStatusGizi === 'Berisiko Lebih') {
           if (itemStatusGizi !== 'Beresiko Lebih') return false;
         } else if (itemStatusGizi.toLowerCase() !== filterStatusGizi.toLowerCase()) {
