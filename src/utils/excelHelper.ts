@@ -181,33 +181,56 @@ export function downloadExcelTemplate(selectedBulan = 'Agustus', selectedTahun =
 /**
  * Ekspor / Cetak Lembar Rekapitulasi Balita ke Excel (.xlsx)
  */
-export function exportDataToExcel(data: BalitaPMT[], filename = 'Cetakan_Evaluasi_Stunting') {
-  const exportRows = data.map((item, idx) => ({
-    'No': idx + 1,
-    'NIK': item.nik,
-    'Nama Balita': item.namaBalita,
-    'Nama Ibu': item.namaIbu,
-    'Jenis Kelamin': item.jk === 'L' ? 'Laki-laki' : 'Perempuan',
-    'Tanggal Lahir': item.tanggalLahir,
-    'Usia (Bulan)': item.usiaBulan,
-    'Desa/Kelurahan': item.desa,
-    'Posyandu': item.posyandu,
-    'Puskesmas': item.puskesmas,
-    'Tanggal Pengukuran': item.tanggalPengukuran,
-    'Berat Badan (kg)': item.beratBadan,
-    'Tinggi Badan (cm)': item.tinggiBadan,
-    'Z-Score TB/U': item.zScoreTBU,
-    'Status Stunting (TB/U)': item.statusTBU,
-    'Z-Score BB/U': item.zScoreBBU,
-    'Status Berat Badan (BB/U)': item.statusBBU,
-    'Status Gizi Balita': getStatusGiziBalita(item),
-    'Status Gizi (BB/TB)': item.statusBBTB,
-    'Terakhir Posyandu': getFormattedTanggalPosyandu((item.riwayat && item.riwayat.length > 0 ? item.riwayat[item.riwayat.length - 1].tanggal : '') || item.tanggalPengukuran).tglFormatted,
-    'Menu Makanan': item.menuPMT,
-    'Kepatuhan Konsumsi': item.kepatuhan,
-    'Status Intervensi': item.statusIntervensi,
-    'Catatan Kesehatan': item.catatanKesehatan,
-  }));
+export function exportDataToExcel(data: BalitaPMT[], filename = 'Cetakan_Evaluasi_Stunting', periodeLabel?: string) {
+  const derivedPeriode =
+    periodeLabel ||
+    (data.length > 0
+      ? Array.from(
+          new Set(
+            data.map(
+              (d) =>
+                getFormattedTanggalPosyandu(
+                  d.tanggalPengukuran ||
+                    (d.riwayat && d.riwayat.length > 0 ? d.riwayat[d.riwayat.length - 1].tanggal : '')
+                ).bulanTahun
+            )
+          )
+        ).join(', ')
+      : '-');
+
+  const exportRows = data.map((item, idx) => {
+    const targetDate =
+      item.tanggalPengukuran ||
+      (item.riwayat && item.riwayat.length > 0 ? item.riwayat[item.riwayat.length - 1].tanggal : '');
+    const tglInfo = getFormattedTanggalPosyandu(targetDate);
+
+    return {
+      'No': idx + 1,
+      'NIK': item.nik,
+      'Nama Balita': item.namaBalita,
+      'Nama Ibu': item.namaIbu,
+      'Jenis Kelamin': item.jk === 'L' ? 'Laki-laki' : 'Perempuan',
+      'Tanggal Lahir': item.tanggalLahir,
+      'Usia (Bulan)': item.usiaBulan,
+      'Desa/Kelurahan': item.desa,
+      'Posyandu': item.posyandu,
+      'Puskesmas': item.puskesmas,
+      'Bulan Posyandu': tglInfo.bulanTahun,
+      'Tanggal Pengukuran': tglInfo.tglFormatted,
+      'Berat Badan (kg)': item.beratBadan,
+      'Tinggi Badan (cm)': item.tinggiBadan,
+      'Z-Score TB/U': item.zScoreTBU,
+      'Status Stunting (TB/U)': item.statusTBU,
+      'Z-Score BB/U': item.zScoreBBU,
+      'Status Berat Badan (BB/U)': item.statusBBU,
+      'Status Gizi Balita': getStatusGiziBalita(item),
+      'Status Gizi (BB/TB)': item.statusBBTB,
+      'Menu Makanan': item.menuPMT,
+      'Kepatuhan Konsumsi': item.kepatuhan,
+      'Status Intervensi': item.statusIntervensi,
+      'Catatan Kesehatan': item.catatanKesehatan,
+    };
+  });
 
   const ws = XLSX.utils.json_to_sheet(exportRows);
 
@@ -223,6 +246,7 @@ export function exportDataToExcel(data: BalitaPMT[], filename = 'Cetakan_Evaluas
     { wch: 16 }, // Desa
     { wch: 20 }, // Posyandu
     { wch: 22 }, // Puskesmas
+    { wch: 18 }, // Bulan Posyandu
     { wch: 18 }, // Tanggal Pengukuran
     { wch: 16 }, // Berat Badan (kg)
     { wch: 16 }, // Tinggi Badan (cm)
@@ -230,8 +254,8 @@ export function exportDataToExcel(data: BalitaPMT[], filename = 'Cetakan_Evaluas
     { wch: 22 }, // Status Stunting
     { wch: 14 }, // Z-Score BB/U
     { wch: 22 }, // Status BB/U
+    { wch: 18 }, // Status Gizi Balita
     { wch: 18 }, // Status BB/TB
-    { wch: 20 }, // BULAN
     { wch: 35 }, // Menu Makanan
     { wch: 18 }, // Kepatuhan
     { wch: 20 }, // Status Intervensi
@@ -273,6 +297,7 @@ export function exportDataToExcel(data: BalitaPMT[], filename = 'Cetakan_Evaluas
   const summaryRows = [
     { 'Parameter': 'Judul Laporan', 'Keterangan': 'LAPORAN EVALUASI DATA BALITA STUNTING' },
     { 'Parameter': 'Puskesmas Pengampu', 'Keterangan': data[0]?.puskesmas || 'Puskesmas Ampana Tete' },
+    { 'Parameter': 'Periode Bulan Posyandu', 'Keterangan': derivedPeriode },
     { 'Parameter': 'Tanggal Cetak Laporan', 'Keterangan': currentDate },
     { 'Parameter': 'Standar Baku Antropometri', 'Keterangan': 'Permenkes RI No. 2 Tahun 2020 (WHO Child Growth Standards)' },
     { 'Parameter': 'Total Balita Sasaran', 'Keterangan': `${total} Anak` },
@@ -302,46 +327,154 @@ export function exportDataToExcel(data: BalitaPMT[], filename = 'Cetakan_Evaluas
 
   XLSX.utils.book_append_sheet(wb, wsSummary, 'Ringkasan_Laporan');
 
-  XLSX.writeFile(wb, `${filename}_${new Date().toISOString().split('T')[0]}.xlsx`);
+  const safePeriodSuffix = derivedPeriode && derivedPeriode !== '-' ? `_${derivedPeriode.replace(/[^a-zA-Z0-9]/g, '_')}` : '';
+  XLSX.writeFile(wb, `${filename}${safePeriodSuffix}.xlsx`);
 }
 
 /**
  * Ekspor Data ke Format CSV
  */
-export function exportDataToCSV(data: BalitaPMT[], filename = 'Data_Stunting') {
-  const exportRows = data.map((item, idx) => ({
-    'No': idx + 1,
-    'NIK': item.nik,
-    'Nama Balita': item.namaBalita,
-    'Nama Ibu': item.namaIbu,
-    'Jenis Kelamin': item.jk,
-    'Tanggal Lahir': item.tanggalLahir,
-    'Usia (Bulan)': item.usiaBulan,
-    'Desa': item.desa,
-    'Posyandu': item.posyandu,
-    'Puskesmas': item.puskesmas,
-    'Tanggal Pengukuran': item.tanggalPengukuran,
-    'Berat Badan (kg)': item.beratBadan,
-    'Tinggi Badan (cm)': item.tinggiBadan,
-    'Z-Score TB/U': item.zScoreTBU,
-    'Status Stunting': item.statusTBU,
-    'Status Gizi Balita': getStatusGiziBalita(item),
-    'Status Gizi (BB/TB)': item.statusBBTB,
-    'Terakhir Posyandu': getFormattedTanggalPosyandu((item.riwayat && item.riwayat.length > 0 ? item.riwayat[item.riwayat.length - 1].tanggal : '') || item.tanggalPengukuran).tglFormatted,
-    'Kepatuhan': item.kepatuhan,
-    'Status Intervensi': item.statusIntervensi,
-  }));
+export function exportDataToCSV(data: BalitaPMT[], filename = 'Data_Stunting', periodeLabel?: string) {
+  const exportRows = data.map((item, idx) => {
+    const targetDate =
+      item.tanggalPengukuran ||
+      (item.riwayat && item.riwayat.length > 0 ? item.riwayat[item.riwayat.length - 1].tanggal : '');
+    const tglInfo = getFormattedTanggalPosyandu(targetDate);
+
+    return {
+      'No': idx + 1,
+      'NIK': item.nik,
+      'Nama Balita': item.namaBalita,
+      'Nama Ibu': item.namaIbu,
+      'Jenis Kelamin': item.jk,
+      'Tanggal Lahir': item.tanggalLahir,
+      'Usia (Bulan)': item.usiaBulan,
+      'Desa': item.desa,
+      'Posyandu': item.posyandu,
+      'Puskesmas': item.puskesmas,
+      'Bulan Posyandu': tglInfo.bulanTahun,
+      'Tanggal Pengukuran': tglInfo.tglFormatted,
+      'Berat Badan (kg)': item.beratBadan,
+      'Tinggi Badan (cm)': item.tinggiBadan,
+      'Z-Score TB/U': item.zScoreTBU,
+      'Status Stunting': item.statusTBU,
+      'Status Gizi Balita': getStatusGiziBalita(item),
+      'Status Gizi (BB/TB)': item.statusBBTB,
+      'Kepatuhan': item.kepatuhan,
+      'Status Intervensi': item.statusIntervensi,
+    };
+  });
 
   const ws = XLSX.utils.json_to_sheet(exportRows);
   const csvOutput = XLSX.utils.sheet_to_csv(ws);
   const blob = new Blob([csvOutput], { type: 'text/csv;charset=utf-8;' });
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
+  const safePeriodSuffix = periodeLabel ? `_${periodeLabel.replace(/[^a-zA-Z0-9]/g, '_')}` : '';
   link.setAttribute('href', url);
-  link.setAttribute('download', `${filename}_${new Date().toISOString().split('T')[0]}.csv`);
+  link.setAttribute('download', `${filename}${safePeriodSuffix}.csv`);
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+}
+
+/**
+ * Mengambil proyeksi data balita sesuai filter Bulan & Tahun Posyandu dari riwayat penimbangan
+ */
+export function getBalitaDataForPeriod(
+  data: BalitaPMT[],
+  filterBulan = 'Semua',
+  filterTahun = 'Semua'
+): BalitaPMT[] {
+  if (filterBulan === 'Semua' && filterTahun === 'Semua') {
+    return data;
+  }
+
+  const matchesMonthYear = (dateStr: string) => {
+    if (!dateStr) return false;
+    const info = getFormattedTanggalPosyandu(dateStr);
+    const matchMonth =
+      filterBulan === 'Semua' ||
+      info.bulanTahun.toLowerCase().includes(filterBulan.toLowerCase()) ||
+      info.tglFormatted.toLowerCase().includes(filterBulan.toLowerCase());
+    const matchYear =
+      filterTahun === 'Semua' ||
+      info.bulanTahun.includes(filterTahun) ||
+      info.tglFormatted.includes(filterTahun) ||
+      dateStr.startsWith(filterTahun);
+    return matchMonth && matchYear;
+  };
+
+  const result: BalitaPMT[] = [];
+
+  for (const rawItem of data) {
+    // Cari pengukuran di riwayat yang cocok dengan bulan & tahun (ambil yang terbaru di bulan tsb)
+    const matchedHist =
+      rawItem.riwayat && rawItem.riwayat.length > 0
+        ? [...rawItem.riwayat].reverse().find((h) => matchesMonthYear(h.tanggal))
+        : undefined;
+
+    if (matchedHist) {
+      const recalculated = recalculateBalitaForDate(
+        {
+          ...rawItem,
+          beratBadan: matchedHist.beratBadan,
+          tinggiBadan: matchedHist.tinggiBadan,
+          kepatuhan: matchedHist.kepatuhan,
+          hariPMT: matchedHist.hariPMT || rawItem.hariPMT,
+          catatanKesehatan: matchedHist.catatan || rawItem.catatanKesehatan,
+        },
+        matchedHist.tanggal
+      );
+      result.push({
+        ...recalculated,
+        id: rawItem.id,
+        riwayat: rawItem.riwayat,
+      });
+    } else if (matchesMonthYear(rawItem.tanggalPengukuran)) {
+      result.push(rawItem);
+    }
+  }
+
+  return result;
+}
+
+/**
+ * Mendapatkan daftar bulan & tahun Posyandu yang tersedia di dalam data & riwayat balita
+ */
+export function getAvailablePeriodsFromData(
+  data: BalitaPMT[]
+): { bulan: string; tahun: string; label: string; sortKey: string }[] {
+  const periodMap = new Map<string, { bulan: string; tahun: string; label: string; sortKey: string }>();
+
+  const registerDate = (dateStr?: string) => {
+    if (!dateStr) return;
+    const info = getFormattedTanggalPosyandu(dateStr);
+    if (!info.bulanTahun || info.bulanTahun === '-') return;
+    const parts = info.bulanTahun.split(' ');
+    if (parts.length < 2) return;
+    const bulan = parts[0];
+    const tahun = parts[1];
+    const sortKey = dateStr.slice(0, 7); // YYYY-MM
+    const key = `${bulan}-${tahun}`;
+    if (!periodMap.has(key)) {
+      periodMap.set(key, {
+        bulan,
+        tahun,
+        label: info.bulanTahun,
+        sortKey,
+      });
+    }
+  };
+
+  data.forEach((item) => {
+    registerDate(item.tanggalPengukuran);
+    if (item.riwayat && item.riwayat.length > 0) {
+      item.riwayat.forEach((h) => registerDate(h.tanggal));
+    }
+  });
+
+  return Array.from(periodMap.values()).sort((a, b) => a.sortKey.localeCompare(b.sortKey));
 }
 
 /**

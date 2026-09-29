@@ -147,6 +147,8 @@ export default function App() {
   const [editingBalita, setEditingBalita] = useState<BalitaPMT | null>(null);
   const [selectedBalitaForPlot, setSelectedBalitaForPlot] = useState<BalitaPMT | null>(null);
   const [isPrintReportOpen, setIsPrintReportOpen] = useState(false);
+  const [printBulan, setPrintBulan] = useState<string>('Semua');
+  const [printTahun, setPrintTahun] = useState<string>('Semua');
 
   // Filter Antropometri
   const [selectedPosyandu, setSelectedPosyandu] = useState<string>('Semua');
@@ -257,7 +259,11 @@ export default function App() {
               setEditingBalita(null);
               setIsManualEntryOpen(true);
             }}
-            onOpenPrintReport={() => setIsPrintReportOpen(true)}
+            onOpenPrintReport={(bulan, tahun) => {
+              setPrintBulan(bulan || 'Semua');
+              setPrintTahun(tahun || 'Semua');
+              setIsPrintReportOpen(true);
+            }}
             onOpenUploadExcel={() => setIsUploadExcelOpen(true)}
             selectedPosyandu={selectedPosyandu}
             selectedStatus={selectedStatus}
@@ -344,6 +350,9 @@ export default function App() {
         isOpen={isPrintReportOpen}
         onClose={() => setIsPrintReportOpen(false)}
         data={data}
+        initialBulan={printBulan}
+        initialTahun={printTahun}
+        selectedPosyandu={selectedPosyandu}
       />
 
       {/* User Settings & Account Modal */}

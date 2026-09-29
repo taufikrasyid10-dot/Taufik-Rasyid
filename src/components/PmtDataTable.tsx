@@ -28,7 +28,7 @@ interface PmtDataTableProps {
   onEditBalita: (balita: BalitaPMT) => void;
   onDeleteBalita: (id: string) => void;
   onAddBalita: () => void;
-  onOpenPrintReport?: () => void;
+  onOpenPrintReport?: (bulan?: string, tahun?: string) => void;
   onOpenUploadExcel?: () => void;
   selectedPosyandu: string;
   selectedStatus: string;
@@ -243,7 +243,7 @@ export default function PmtDataTable({
 
   const handleExportSelectedOrAll = (format: 'xlsx' | 'csv') => {
     const exportTargets = selectedIds.length > 0
-      ? data.filter(d => selectedIds.includes(d.id))
+      ? filteredData.filter(d => selectedIds.includes(d.id))
       : filteredData;
 
     if (exportTargets.length === 0) {
@@ -251,10 +251,17 @@ export default function PmtDataTable({
       return;
     }
 
+    const periodeLabel =
+      filterBulanPosyandu !== 'Semua' && filterTahunPosyandu !== 'Semua'
+        ? `${filterBulanPosyandu} ${filterTahunPosyandu}`
+        : filterBulanPosyandu !== 'Semua'
+        ? filterBulanPosyandu
+        : undefined;
+
     if (format === 'xlsx') {
-      exportDataToExcel(exportTargets, `Rekap_Stunting_${selectedPosyandu !== 'Semua' ? selectedPosyandu : 'Semua'}`);
+      exportDataToExcel(exportTargets, `Rekap_Stunting_${selectedPosyandu !== 'Semua' ? selectedPosyandu : 'Semua'}`, periodeLabel);
     } else {
-      exportDataToCSV(exportTargets, `Rekap_Stunting_${selectedPosyandu !== 'Semua' ? selectedPosyandu : 'Semua'}`);
+      exportDataToCSV(exportTargets, `Rekap_Stunting_${selectedPosyandu !== 'Semua' ? selectedPosyandu : 'Semua'}`, periodeLabel);
     }
   };
 
@@ -296,7 +303,7 @@ export default function PmtDataTable({
                   id="btn-table-cetak-laporan"
                   onClick={() => {
                     if (onOpenPrintReport) {
-                      onOpenPrintReport();
+                      onOpenPrintReport(filterBulanPosyandu, filterTahunPosyandu);
                     } else {
                       handleExportSelectedOrAll('xlsx');
                     }
@@ -345,7 +352,7 @@ export default function PmtDataTable({
                       type="button"
                       onClick={() => {
                         setIsTablePrintMenuOpen(false);
-                        onOpenPrintReport();
+                        onOpenPrintReport(filterBulanPosyandu, filterTahunPosyandu);
                       }}
                       className="w-full flex items-start gap-2.5 rounded-lg px-2.5 py-2 text-left hover:bg-slate-100 transition group"
                     >
