@@ -16,6 +16,103 @@ import { CheckCircle2, ShieldCheck, AlertCircle } from 'lucide-react';
 
 const STORAGE_KEY_BALITA = 'pmt_stanting_balita_data_v7';
 
+/**
+ * Menggabungkan data balita yang memiliki NIK atau Nama yang sama agar setiap anak
+ * hanya dihitung sebagai 1 balita unik (tidak ganda menjadi 6 saat upload bulan baru),
+ * sedangkan hasil penimbangan lintas bulan disimpan di dalam array `riwayat`.
+ */
+function deduplicateAndMergeBalita(list: BalitaPMT[]): BalitaPMT[] {
+  const map = new Map<string, BalitaPMT>();
+
+  list.forEach((item) => {
+    const nikKey = (item.nik || '').trim();
+    const nameKey = (item.namaBalita || '').trim().toUpperCase();
+    // Cari apakah sudah ada di map berdasarkan NIK atau Nama Balita
+    let matchKey = nikKey || nameKey;
+    for (const [k, existing] of map.entries()) {
+      if (
+        (nikKey && (existing.nik || '').trim() === nikKey) ||
+        (nameKey && (existing.namaBalita || '').trim().toUpperCase() === nameKey)
+      ) {
+        matchKey = k;
+        break;
+      }
+    }
+
+    // Kumpulkan riwayat dari item ini beserta tanggal pengukurannya sendiri
+    const itemHistories = [...(item.riwayat || [])];
+    if (item.tanggalPengukuran) {
+      const itemMonthYear = getFormattedTanggalPosyandu(item.tanggalPengukuran).bulanTahun.toLowerCase().trim();
+      const existingHistIdx = itemHistories.findIndex(
+        (h) =>
+          h.tanggal === item.tanggalPengukuran ||
+          getFormattedTanggalPosyandu(h.tanggal).bulanTahun.toLowerCase().trim() === itemMonthYear
+      );
+      const selfHist = {
+        id: `hist-${item.tanggalPengukuran}-${item.id}`,
+        tanggal: item.tanggalPengukuran,
+        hariPMT: item.hariPMT || 30,
+        tinggiBadan: item.tinggiBadan,
+        beratBadan: item.beratBadan,
+        kepatuhan: item.kepatuhan,
+        catatan:
+          item.catatanKesehatan ||
+          `Pengukuran Posyandu ${getFormattedTanggalPosyandu(item.tanggalPengukuran).bulanTahun}`,
+      };
+      if (existingHistIdx >= 0) {
+        itemHistories[existingHistIdx] = selfHist;
+      } else {
+        itemHistories.push(selfHist);
+      }
+    }
+
+    if (!map.has(matchKey)) {
+      itemHistories.sort((a, b) => new Date(a.tanggal).getTime() - new Date(b.tanggal).getTime());
+      map.set(matchKey, {
+        ...item,
+        riwayat: itemHistories,
+      });
+    } else {
+      const existing = map.get(matchKey)!;
+      const mergedHistories = [...(existing.riwayat || [])];
+
+      itemHistories.forEach((newH) => {
+        const newMonthYear = getFormattedTanggalPosyandu(newH.tanggal).bulanTahun.toLowerCase().trim();
+        const dupIdx = mergedHistories.findIndex(
+          (oldH) =>
+            oldH.tanggal === newH.tanggal ||
+            (newMonthYear &&
+              getFormattedTanggalPosyandu(oldH.tanggal).bulanTahun.toLowerCase().trim() === newMonthYear &&
+              oldH.tanggal.slice(0, 7) === newH.tanggal.slice(0, 7))
+        );
+        if (dupIdx >= 0) {
+          mergedHistories[dupIdx] = newH;
+        } else {
+          mergedHistories.push(newH);
+        }
+      });
+
+      mergedHistories.sort((a, b) => new Date(a.tanggal).getTime() - new Date(b.tanggal).getTime());
+
+      // Gunakan data pengukuran terbaru (atau yang baru diupload) sebagai status utama balita,
+      // namun tetap pertahankan ID awal balita agar tidak terduplikasi
+      const existingTime = new Date(existing.tanggalPengukuran || '2026-01-01').getTime();
+      const itemTime = new Date(item.tanggalPengukuran || '2026-01-01').getTime();
+      const latestRecord = itemTime >= existingTime ? item : existing;
+
+      map.set(matchKey, {
+        ...existing,
+        ...latestRecord,
+        id: existing.id,
+        nik: existing.nik || latestRecord.nik,
+        riwayat: mergedHistories,
+      });
+    }
+  });
+
+  return Array.from(map.values());
+}
+
 export default function App() {
   // User Authentication State
   const [currentUser, setCurUser] = useState<UserAccount | null>(() => getCurrentUser());
@@ -34,7 +131,7 @@ export default function App() {
             (b.namaBalita || '').toUpperCase().includes('ALFA') || (b.nik || '').trim() === '720904161224001'
           );
           if (hasAlfa) {
-            return parsed;
+            return deduplicateAndMergeBalita(parsed);
           }
         }
       }
@@ -199,73 +296,14 @@ export default function App() {
         onClose={() => setIsUploadExcelOpen(false)}
         onConfirmUpload={(newData, mode) => {
           if (mode === 'replace') {
-            setData(newData);
-            showToast(`Berhasil mengganti database dengan ${newData.length} data balita.`);
+            const deduped = deduplicateAndMergeBalita(newData);
+            setData(deduped);
+            showToast(`Berhasil mengganti database dengan ${deduped.length} data balita.`);
           } else {
-            setData(prev => {
-              const updated = [...prev];
-              let addedCount = 0;
-              let updatedCount = 0;
-
-              newData.forEach(newItem => {
-                const newItemInfo = getFormattedTanggalPosyandu(newItem.tanggalPengukuran);
-                const newMonthYear = newItemInfo.bulanTahun.toLowerCase().trim();
-
-                // Cari apakah balita dengan NIK yang sama sudah tercatat di bulan & tahun yang sama
-                const existingIdx = updated.findIndex(p => {
-                  const pMonthYear = getFormattedTanggalPosyandu(p.tanggalPengukuran).bulanTahun.toLowerCase().trim();
-                  return p.nik.trim() === newItem.nik.trim() && pMonthYear === newMonthYear;
-                });
-
-                if (existingIdx >= 0) {
-                  // Perbarui data penimbangan di bulan yang sama
-                  updated[existingIdx] = {
-                    ...updated[existingIdx],
-                    ...newItem,
-                    id: updated[existingIdx].id, // Pertahankan ID yang stabil
-                  };
-                  updatedCount++;
-                } else {
-                  // Tambahkan baris penimbangan baru untuk bulan ini (balita yang sama di bulan berbeda)
-                  updated.unshift(newItem);
-                  addedCount++;
-                }
-              });
-
-              // Sinkronisasi riwayat pengukuran lintas bulan untuk setiap balita (berdasarkan NIK)
-              // agar kurva pertumbuhan WHO menampilkan seluruh titik bulan secara berurutan
-              const historyMap = new Map<string, any[]>();
-              updated.forEach(item => {
-                const nikKey = item.nik.trim();
-                const list = historyMap.get(nikKey) || [];
-                const tgl = item.tanggalPengukuran;
-                if (!list.some(h => h.tanggal === tgl)) {
-                  list.push({
-                    id: `hist-${tgl}-${item.id}`,
-                    tanggal: tgl,
-                    hariPMT: item.hariPMT || 1,
-                    tinggiBadan: item.tinggiBadan,
-                    beratBadan: item.beratBadan,
-                    kepatuhan: item.kepatuhan,
-                    catatan: item.catatanKesehatan || `Pengukuran Posyandu ${getFormattedTanggalPosyandu(tgl).bulanTahun}`,
-                  });
-                }
-                historyMap.set(nikKey, list);
-              });
-
-              // Tetapkan riwayat yang tersinkronisasi dan terurut secara kronologis
-              return updated.map(item => {
-                const histories = [...(historyMap.get(item.nik.trim()) || item.riwayat || [])];
-                histories.sort((a, b) => new Date(a.tanggal).getTime() - new Date(b.tanggal).getTime());
-                return {
-                  ...item,
-                  riwayat: histories,
-                };
-              });
-            });
+            setData(prev => deduplicateAndMergeBalita([...prev, ...newData]));
 
             const firstInfo = newData.length > 0 ? getFormattedTanggalPosyandu(newData[0].tanggalPengukuran).bulanTahun : '';
-            showToast(`Berhasil memproses ${newData.length} data balita${firstInfo ? ` periode ${firstInfo}` : ''}.`);
+            showToast(`Berhasil memperbarui riwayat penimbangan ${newData.length} balita${firstInfo ? ` periode ${firstInfo}` : ''}.`);
           }
         }}
       />

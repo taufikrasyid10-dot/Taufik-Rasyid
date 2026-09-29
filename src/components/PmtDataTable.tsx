@@ -19,7 +19,7 @@ import {
   Calendar,
   Upload,
 } from 'lucide-react';
-import { exportDataToExcel, exportDataToCSV } from '../utils/excelHelper';
+import { exportDataToExcel, exportDataToCSV, recalculateBalitaForDate } from '../utils/excelHelper';
 import { getStatusGiziBalita, getFormattedTanggalPosyandu } from '../utils/nutritionStandards';
 
 interface PmtDataTableProps {
@@ -122,63 +122,77 @@ export default function PmtDataTable({
 
   // Filtering Logic
   const filteredData = useMemo(() => {
-    return data.filter((item) => {
+    const result: BalitaPMT[] = [];
+
+    for (const rawItem of data) {
+      let item = rawItem;
+
       // Posyandu filter
       if (selectedPosyandu !== 'Semua' && item.posyandu !== selectedPosyandu) {
-        return false;
+        continue;
+      }
+
+      // Bulan & Tahun Posyandu filter (mendukung pengecekan lintas bulan di riwayat)
+      if (filterBulanPosyandu !== 'Semua' || filterTahunPosyandu !== 'Semua') {
+        const matchesMonthYear = (dateStr: string) => {
+          if (!dateStr) return false;
+          const info = getFormattedTanggalPosyandu(dateStr);
+          const matchMonth =
+            filterBulanPosyandu === 'Semua' ||
+            info.bulanTahun.toLowerCase().includes(filterBulanPosyandu.toLowerCase()) ||
+            info.tglFormatted.toLowerCase().includes(filterBulanPosyandu.toLowerCase());
+          const matchYear =
+            filterTahunPosyandu === 'Semua' ||
+            info.bulanTahun.includes(filterTahunPosyandu) ||
+            info.tglFormatted.includes(filterTahunPosyandu) ||
+            dateStr.startsWith(filterTahunPosyandu);
+          return matchMonth && matchYear;
+        };
+
+        // Cek apakah ada di riwayat atau tanggalPengukuran utama
+        const matchedHist =
+          item.riwayat && item.riwayat.length > 0
+            ? [...item.riwayat].reverse().find((h) => matchesMonthYear(h.tanggal))
+            : undefined;
+
+        if (matchedHist) {
+          const recalculated = recalculateBalitaForDate(
+            {
+              ...item,
+              beratBadan: matchedHist.beratBadan,
+              tinggiBadan: matchedHist.tinggiBadan,
+              kepatuhan: matchedHist.kepatuhan,
+              hariPMT: matchedHist.hariPMT || item.hariPMT,
+              catatanKesehatan: matchedHist.catatan || item.catatanKesehatan,
+            },
+            matchedHist.tanggal
+          );
+          item = {
+            ...recalculated,
+            id: rawItem.id,
+            riwayat: rawItem.riwayat,
+          };
+        } else if (!matchesMonthYear(item.tanggalPengukuran)) {
+          continue;
+        }
       }
 
       // Status Stunting filter
       if (filterStatus === 'Stunting') {
-        if (item.statusTBU !== 'Sangat Pendek' && item.statusTBU !== 'Pendek') return false;
+        if (item.statusTBU !== 'Sangat Pendek' && item.statusTBU !== 'Pendek') continue;
       } else if (filterStatus !== 'Semua' && item.statusTBU !== filterStatus) {
-        return false;
+        continue;
       }
 
       // Status Gizi filter (Normal, Stunting, Gizi Buruk, Beresiko Lebih, Gizi Lebih, Obesitas)
       if (filterStatusGizi !== 'Semua') {
         const itemStatusGizi = getStatusGiziBalita(item);
         if (filterStatusGizi === 'Stanting' || filterStatusGizi === 'Stunting') {
-          if (itemStatusGizi !== 'Stunting') return false;
+          if (itemStatusGizi !== 'Stunting') continue;
         } else if (filterStatusGizi === 'Beresiko Lebih' || filterStatusGizi === 'Berisiko Lebih') {
-          if (itemStatusGizi !== 'Beresiko Lebih') return false;
+          if (itemStatusGizi !== 'Beresiko Lebih') continue;
         } else if (itemStatusGizi.toLowerCase() !== filterStatusGizi.toLowerCase()) {
-          return false;
-        }
-      }
-
-      // Bulan Posyandu filter (Bulan terpisah)
-      if (filterBulanPosyandu !== 'Semua') {
-        const targetDateStr =
-          item.tanggalPengukuran ||
-          (item.riwayat && item.riwayat.length > 0
-            ? item.riwayat[item.riwayat.length - 1].tanggal
-            : '') ||
-          '';
-        const info = getFormattedTanggalPosyandu(targetDateStr);
-        if (
-          !info.bulanTahun.toLowerCase().includes(filterBulanPosyandu.toLowerCase()) &&
-          !info.tglFormatted.toLowerCase().includes(filterBulanPosyandu.toLowerCase())
-        ) {
-          return false;
-        }
-      }
-
-      // Tahun Posyandu filter (Tahun terpisah, 2026 sampai seterusnya)
-      if (filterTahunPosyandu !== 'Semua') {
-        const targetDateStr =
-          item.tanggalPengukuran ||
-          (item.riwayat && item.riwayat.length > 0
-            ? item.riwayat[item.riwayat.length - 1].tanggal
-            : '') ||
-          '';
-        const info = getFormattedTanggalPosyandu(targetDateStr);
-        if (
-          !info.bulanTahun.includes(filterTahunPosyandu) &&
-          !info.tglFormatted.includes(filterTahunPosyandu) &&
-          !targetDateStr.startsWith(filterTahunPosyandu)
-        ) {
-          return false;
+          continue;
         }
       }
 
@@ -190,11 +204,15 @@ export default function PmtDataTable({
         const matchIbu = item.namaIbu.toLowerCase().includes(query);
         const matchDesa = item.desa.toLowerCase().includes(query);
         const matchPosyandu = item.posyandu.toLowerCase().includes(query);
-        return matchName || matchNik || matchIbu || matchDesa || matchPosyandu;
+        if (!(matchName || matchNik || matchIbu || matchDesa || matchPosyandu)) {
+          continue;
+        }
       }
 
-      return true;
-    });
+      result.push(item);
+    }
+
+    return result;
   }, [data, selectedPosyandu, filterStatus, filterStatusGizi, filterBulanPosyandu, filterTahunPosyandu, searchTerm]);
 
   // Pagination
